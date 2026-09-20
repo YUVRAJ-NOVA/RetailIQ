@@ -1924,8 +1924,334 @@ a.sf-link:hover { color: var(--blue); }
     font-size: 0.56rem;
   }
 }
+/* ═══════════════════════════════════════════════
+   WELCOME MODAL
+═══════════════════════════════════════════════ */
+.wm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(6, 6, 10, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: wmFadeIn 0.5s ease forwards;
+}
+@keyframes wmFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.wm-overlay.hiding {
+  animation: wmFadeOut 0.4s ease forwards;
+}
+@keyframes wmFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; pointer-events: none; }
+}
+
+.wm-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 40px 40px 28px;
+  max-width: 560px;
+  width: 100%;
+  overflow: hidden;
+  animation: wmSlideUp 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes wmSlideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Ambient glows */
+.wm-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(60px);
+}
+.wm-glow-1 {
+  width: 300px; height: 300px;
+  background: rgba(79,142,247,0.12);
+  top: -100px; right: -80px;
+  animation: wmGlowPulse 4s ease infinite;
+}
+.wm-glow-2 {
+  width: 200px; height: 200px;
+  background: rgba(167,139,250,0.08);
+  bottom: -60px; left: -40px;
+  animation: wmGlowPulse 4s ease infinite reverse;
+}
+@keyframes wmGlowPulse {
+  0%,100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.1); }
+}
+
+/* Header */
+.wm-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 1;
+}
+.wm-logo {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.wm-logo span { color: var(--blue); }
+.wm-tagline {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 500;
+  padding: 3px 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+}
+
+/* Hero */
+.wm-hero {
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 1;
+}
+.wm-hero-pre {
+  font-size: 0.68rem;
+  color: var(--blue);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.wm-hero-h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: var(--text);
+}
+.wm-hero-h1 em {
+  color: var(--blue);
+  font-style: normal;
+}
+
+/* Choices */
+.wm-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.wm-choice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.wm-choice::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+.wm-choice:hover {
+  border-color: var(--border2);
+  transform: translateX(4px);
+  background: rgba(255,255,255,0.04);
+}
+.wm-choice:active {
+  transform: translateX(2px) scale(0.99);
+}
+
+/* Hover accent per card */
+#wmc-dashboard:hover { border-color: rgba(79,142,247,0.4); box-shadow: 0 0 0 1px rgba(79,142,247,0.1), 0 8px 24px rgba(0,0,0,0.2); }
+#wmc-story:hover     { border-color: rgba(167,139,250,0.4); box-shadow: 0 0 0 1px rgba(167,139,250,0.1), 0 8px 24px rgba(0,0,0,0.2); }
+#wmc-process:hover   { border-color: rgba(52,211,153,0.4);  box-shadow: 0 0 0 1px rgba(52,211,153,0.1),  0 8px 24px rgba(0,0,0,0.2); }
+
+.wm-choice-icon {
+  width: 44px; height: 44px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--blue);
+  transition: all 0.2s;
+}
+.wm-choice:hover .wm-choice-icon {
+  border-color: var(--border2);
+}
+
+.wm-choice-content { flex: 1; min-width: 0; }
+.wm-choice-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+  letter-spacing: -0.01em;
+}
+.wm-choice-desc {
+  font-size: 0.72rem;
+  color: var(--muted2);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wm-choice-arrow {
+  font-size: 1.1rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.wm-choice:hover .wm-choice-arrow {
+  color: var(--text);
+  transform: translateX(3px);
+}
+
+/* Selected state animation */
+.wm-choice.selected {
+  animation: wmSelected 0.3s ease forwards;
+}
+@keyframes wmSelected {
+  0%   { transform: translateX(4px); }
+  50%  { transform: translateX(8px) scale(1.01); }
+  100% { transform: translateX(4px); }
+}
+
+/* Skip */
+.wm-skip {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+  position: relative;
+  z-index: 1;
+}
+.wm-skip:hover { color: var(--muted2); }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .wm-card {
+    padding: 28px 20px 20px;
+    border-radius: 16px;
+  }
+  .wm-hero-h1 { font-size: 1.6rem; }
+  .wm-choice { padding: 13px 14px; gap: 12px; }
+  .wm-choice-icon { width: 38px; height: 38px; }
+  .wm-choice-desc { display: none; }
+  .wm-tagline { display: none; }
+}
+
+@media (max-width: 380px) {
+  .wm-hero-h1 { font-size: 1.4rem; }
+  .wm-card { padding: 24px 16px 16px; }
+}
 </style>
 </head>
+<!-- ═══ WELCOME MODAL ═══ -->
+<div class="wm-overlay" id="wmOverlay">
+  <div class="wm-card" id="wmCard">
+
+    <!-- Ambient glow -->
+    <div class="wm-glow wm-glow-1"></div>
+    <div class="wm-glow wm-glow-2"></div>
+
+    <!-- Header -->
+    <div class="wm-header">
+      <div class="wm-logo">Retail<span>IQ</span></div>
+      <div class="wm-tagline">Customer Intelligence Platform</div>
+    </div>
+
+    <!-- Hero text -->
+    <div class="wm-hero">
+      <div class="wm-hero-pre">Built by Yuvraj · 99,441 Real Orders · XGBoost AUC 0.777</div>
+      <h1 class="wm-hero-h1">Where do you want<br>to <em>begin?</em></h1>
+    </div>
+
+    <!-- Three cards -->
+    <div class="wm-choices">
+
+      <div class="wm-choice" id="wmc-dashboard" onclick="wmChoose('dashboard')">
+        <div class="wm-choice-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="11" height="11" rx="2.5" fill="currentColor" opacity=".9"/>
+            <rect x="15" y="2" width="11" height="11" rx="2.5" fill="currentColor" opacity=".5"/>
+            <rect x="2" y="15" width="11" height="11" rx="2.5" fill="currentColor" opacity=".5"/>
+            <rect x="15" y="15" width="11" height="11" rx="2.5" fill="currentColor" opacity=".7"/>
+          </svg>
+        </div>
+        <div class="wm-choice-content">
+          <div class="wm-choice-title">The Dashboard</div>
+          <div class="wm-choice-desc">Live data · Revenue · Segments · Churn Predictor</div>
+        </div>
+        <div class="wm-choice-arrow">→</div>
+      </div>
+
+      <div class="wm-choice" id="wmc-story" onclick="wmChoose('story')">
+        <div class="wm-choice-icon" style="color:var(--purple)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M4 6h20M4 12h14M4 18h17M4 24h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="wm-choice-content">
+          <div class="wm-choice-title">The Story</div>
+          <div class="wm-choice-desc">How it was built · The mistake · SHAP findings</div>
+        </div>
+        <div class="wm-choice-arrow">→</div>
+      </div>
+
+      <div class="wm-choice" id="wmc-process" onclick="wmChoose('process')">
+        <div class="wm-choice-icon" style="color:var(--green)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="11" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M14 8v6l4 2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="wm-choice-content">
+          <div class="wm-choice-title">The Process</div>
+          <div class="wm-choice-desc">SQL · ML pipeline · Leakage fix · Architecture</div>
+        </div>
+        <div class="wm-choice-arrow">→</div>
+      </div>
+
+    </div>
+
+    <!-- Skip -->
+    <div class="wm-skip" onclick="wmClose()">
+      Skip — take me straight to the dashboard
+    </div>
+
+  </div>
+</div>
 <!-- ═══ TOOLTIP ═══ -->
 <div class="tooltip" id="tooltip"></div>
 
@@ -3649,6 +3975,58 @@ window.addEventListener('resize', () => {
   if (id === 'segments' && state.segments)  renderSegments(state.segments);
   if (id === 'delivery' && state.delivery)  renderDelivery(state.delivery, state.categories);
 });
+// ═══════════════════════════════════════════════
+// WELCOME MODAL — sirf pehli baar dikhta hai
+// ═══════════════════════════════════════════════
+function wmInit() {
+  const seen = localStorage.getItem('retailiq_welcomed');
+  if (seen) {
+    // Already seen — seedha hide karo
+    const overlay = document.getElementById('wmOverlay');
+    if (overlay) overlay.style.display = 'none';
+    return;
+  }
+}
+
+function wmChoose(choice) {
+  const card = document.getElementById('wmOverlay');
+
+  // Selected animation on card
+  let cardEl;
+  if (choice === 'dashboard') cardEl = document.getElementById('wmc-dashboard');
+  if (choice === 'story')     cardEl = document.getElementById('wmc-story');
+  if (choice === 'process')   cardEl = document.getElementById('wmc-process');
+  if (cardEl) cardEl.classList.add('selected');
+
+  // Save to localStorage — never show again
+  localStorage.setItem('retailiq_welcomed', 'true');
+
+  setTimeout(() => {
+    wmClose();
+    // Navigate after close
+    setTimeout(() => {
+      if (choice === 'story') {
+        window.open('story.html', '_blank');
+      } else if (choice === 'process') {
+        window.open('story.html#s2', '_blank');
+      }
+      // dashboard → already on dashboard, bas modal band hua
+    }, 350);
+  }, 280);
+}
+
+function wmClose() {
+  const overlay = document.getElementById('wmOverlay');
+  if (!overlay) return;
+  overlay.classList.add('hiding');
+  localStorage.setItem('retailiq_welcomed', 'true');
+  setTimeout(() => {
+    overlay.style.display = 'none';
+  }, 400);
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', wmInit);
 </script>
 </body>
 </html>
