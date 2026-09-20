@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailIQ — The Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060608;
+  --surface: #0e0e14;
+  --surface2: #14141e;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8e8f0;
+  --muted: #5a5a7a;
+  --muted2: #8888aa;
+  --blue: #4f8ef7;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --purple: #a78bfa;
+  --orange: #fb923c;
+  --font-d: 'Syne', sans-serif;
+  --font-b: 'Inter', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  overflow-x: hidden;
+}
+::selection { background: rgba(79,142,247,0.3); }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 99px; }
+
+/* ── BACK BUTTON ── */
+.back-btn {
+  position: fixed;
+  top: 24px; left: 24px;
+  z-index: 1000;
+  background: rgba(14,14,20,0.9);
+  border: 1px solid var(--border2);
+  border-radius: 99px;
+  padding: 8px 16px 8px 12px;
+  font-size: 0.78rem;
+  color: var(--muted2);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  transition: all 0.2s;
+}
+.back-btn:hover { color: var(--text); border-color: var(--border2); }
+
+/* ── PROGRESS BAR ── */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  z-index: 999;
+  transition: width 0.1s linear;
+  width: 0%;
+}
+
+/* ── CHAPTER NAV DOTS ── */
+.chapter-nav {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cn-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border2);
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+.cn-dot.active {
+  background: var(--blue);
+  box-shadow: 0 0 8px var(--blue);
+  transform: scale(1.4);
+}
+.cn-dot:hover .cn-label { opacity: 1; transform: translateX(0); }
+.cn-label {
+  position: absolute;
+  right: 16px; top: 50%;
+  transform: translateX(8px) translateY(-50%);
+  opacity: 0;
+  white-space: nowrap;
+  font-size: 0.65rem;
+  color: var(--muted2);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  pointer-events: none;
+  transition: all 0.2s;
+}
+
+/* ── SECTIONS ── */
+.section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 10vw;
+  position: relative;
+  overflow: hidden;
+}
+.section-sm {
+  min-height: auto;
+  padding: 80px 10vw;
+}
+
+/* ── FADE IN ON SCROLL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ══════════════════════════
+   SECTION 0 — CINEMATIC HERO
+══════════════════════════ */
+#s0 {
+  background: var(--bg);
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.hero-canvas canvas { width: 100%; height: 100%; }
+
+.hero-content { position: relative; z-index: 2; }
+.hero-pre {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--blue);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+.hero-h1 {
+  font-family: var(--font-d);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+.hero-h1 em { color: var(--blue); font-style: normal; }
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--muted2);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+.hero-scroll-hint {
+  opacity: 0;
+  animation: fadeUp 0.8s 1.2s forwards;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 48px;
+}
+.scroll-arrow {
+  width: 1px; height: 48px;
+  background: linear-gradient(to bottom, var(--blue), transparent);
+  animation: scrollPulse 2s ease infinite;
+}
+@keyframes scrollPulse {
+  0%,100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(20px); }
+}
+
+/* Hero stats */
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+}
+.hs-item { text-align: center; }
+.hs-val {
+  font-family: var(--font-d);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.hs-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.hs-sep {
+  width: 1px;
+  background: var(--border2);
+  align-self: stretch;
+}
+
+/* ══════════════════════════
+   SECTION 1 — THE PROBLEM
+══════════════════════════ */
+#s1 { background: var(--bg); }
+.s1-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.big-stat-display {
+  text-align: center;
+  position: relative;
+}
+.bsd-ring {
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
+  background: radial-gradient(circle, rgba(248,113,113,0.05) 0%, transparent 70%);
+}
+.bsd-ring::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: conic-gradient(var(--red) 0% 93%, var(--green) 93% 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), white calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), white calc(100% - 3px));
+  animation: spinIn 1.5s 0.5s both;
+}
+@keyframes spinIn {
+  from { opacity: 0; transform: rotate(-90deg); }
+  to { opacity: 1; transform: rotate(0deg); }
+}
+.bsd-center {
+  text-align: center;
+  z-index: 1;
+}
+.bsd-pct {
+  font-family: var(--font-d);
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--red);
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+.bsd-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.bsd-legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+.bsd-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  color: var(--muted2);
+}
+.bsd-leg-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.s1-text h2 {
+  font-family: var(--font-d);
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.s1-text h2 em { color: var(--red); font-style: normal; }
+.s1-text p {
+  font-size: 0.9rem;
+  color: var(--muted2);
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+.s1-text p strong { color: var(--text); }
+
+/* ══════════════════════════
+   SECTION 2 — THE BUILD
+══════════════════════════ */
+#s2 { background: var(--surface); }
+.phase-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.phase-timeline::before {
+  content: '';
+  position: absolute;
+  left: 31px;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--blue), var(--purple), var(--green));
+  opacity: 0.3;
+}
+.pt-item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 24px;
+  padding-bottom: 40px;
+  position: relative;
+}
+.pt-item:last-child { padding-bottom: 0; }
+.pt-num-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.pt-circle {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-d);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  background: var(--surface);
+  position: relative;
+  z-index: 1;
+}
+.pt-body {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: border-color 0.2s;
+}
+.pt-body:hover { border-color: var(--border2); }
+.pt-role {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  padding: 3px 10px;
+  border-radius: 99px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.pt-title {
+  font-family: var(--font-d);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.pt-desc {
+  font-size: 0.8rem;
+  color: var(--muted2);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.pt-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pt-tag {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 3px 10px;
+  font-size: 0.65rem;
+  color: var(--muted2);
+}
+
+/* ══════════════════════════
+   SECTION 3 — THE MISTAKE
+══════════════════════════ */
+#s3 {
+  background: var(--bg);
+  position: relative;
+}
+#s3::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(248,113,113,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.mistake-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.mistake-text h2 {
+  font-family: var(--font-d);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.mistake-text p {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+.mistake-text p strong { color: var(--text); }
+.mistake-text code {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--red);
+  font-family: monospace;
+}
+.vs-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vs-card {
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.vs-card-bad {
+  background: rgba(248,113,113,0.06);
+  border: 1px solid rgba(248,113,113,0.2);
+}
+.vs-card-good {
+  background: rgba(52,211,153,0.06);
+  border: 1px solid rgba(52,211,153,0.2);
+}
+.vs-card-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.vs-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.vs-metric { text-align: center; }
+.vs-metric .vm-val {
+  font-family: var(--font-d);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.vs-metric .vm-label {
+  font-size: 0.62rem;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.vs-note {
+  font-size: 0.72rem;
+  color: var(--muted);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 10px;
+  line-height: 1.5;
+}
+.vs-connector {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.vs-connector::before, .vs-connector::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ══════════════════════════
+   SECTION 4 — SHAP FINDINGS
+══════════════════════════ */
+#s4 { background: var(--surface); }
+.shap-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.shap-section-text h2 {
+  font-family: var(--font-d);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.shap-section-text p {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+.shap-section-text p strong { color: var(--text); }
+.shap-chart-container {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+.shap-chart-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted2);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.shap-chart-title span {
+  font-size: 0.65rem;
+  background: var(--green-glow, rgba(52,211,153,0.1));
+  color: var(--green);
+  padding: 3px 8px;
+  border-radius: 99px;
+}
+.shap-bar-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.sbr-item {
+  display: grid;
+  grid-template-columns: 130px 1fr 52px;
+  align-items: center;
+  gap: 12px;
+}
+.sbr-feat {
+  font-size: 0.72rem;
+  color: var(--muted2);
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+.sbr-track {
+  height: 7px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.sbr-fill {
+  height: 100%;
+  border-radius: 99px;
+  width: 0%;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sbr-val {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: right;
+}
+
+/* ══════════════════════════
+   SECTION 5 — PIPELINE
+══════════════════════════ */
+#s5 {
+  background: var(--bg);
+  text-align: center;
+}
+#s5 h2 {
+  font-family: var(--font-d);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 12px;
+}
+#s5 .section-sub {
+  font-size: 0.88rem;
+  color: var(--muted2);
+  margin-bottom: 48px;
+}
+.pipeline-canvas {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+.pl-nodes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.pl-node {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 14px;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s;
+  cursor: default;
+}
+.pl-node:hover {
+  border-color: var(--border2);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+}
+.pl-node.highlight { border-color: var(--blue); background: rgba(79,142,247,0.06); }
+.pl-node .pl-icon { font-size: 1.5rem; margin-bottom: 8px; }
+.pl-node .pl-name {
+  font-family: var(--font-d);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.pl-node .pl-detail {
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.pl-connector-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 0 40px;
+  margin-bottom: 8px;
+}
+.pl-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.7rem;
+  gap: 6px;
+}
+.pl-arrow-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+}
+
+/* ══════════════════════════
+   SECTION 6 — KEY FINDINGS
+══════════════════════════ */
+#s6 { background: var(--surface); }
+#s6 .section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+#s6 h2 {
+  font-family: var(--font-d);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 10px;
+}
+#s6 .section-sub {
+  font-size: 0.85rem;
+  color: var(--muted2);
+}
+.findings-bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.fb-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: default;
+}
+.fb-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.3);
+}
+.fb-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--fc-card);
+  border-radius: 2px 2px 0 0;
+}
+.fb-card .fc-bg-num {
+  position: absolute;
+  bottom: -20px; right: -10px;
+  font-family: var(--font-d);
+  font-size: 7rem;
+  font-weight: 900;
+  color: rgba(255,255,255,0.02);
+  letter-spacing: -0.05em;
+  line-height: 1;
+  pointer-events: none;
+}
+.fb-card .fc-stat {
+  font-family: var(--font-d);
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--fc-card);
+  margin-bottom: 8px;
+  line-height: 1;
+}
+.fb-card .fc-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.fb-card .fc-body {
+  font-size: 0.78rem;
+  color: var(--muted2);
+  line-height: 1.6;
+}
+
+/* ══════════════════════════
+   SECTION 7 — ABOUT YUVRAJ
+══════════════════════════ */
+#s7 {
+  background: var(--bg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+#s7::before {
+  content: '';
+  position: absolute;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(79,142,247,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.about-grid {
+  max-width: 760px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.about-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background-image: url('your-photo.jpg'); /* Place your image path/link here */
+    background-size: cover;
+    background-position: center;
+    margin: 0 auto 20px;
+}
+
+/* Add this new block right below it */
+.about-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Prevents distortion */
+}
+.about-name {
+  font-family: var(--font-d);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 6px;
+}
+.about-role {
+  font-size: 0.82rem;
+  color: var(--muted2);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+.about-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+.about-badge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 7px 16px;
+  font-size: 0.75rem;
+  color: var(--muted2);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.about-badge .ab-icon { font-size: 0.9rem; }
+.about-quote {
+  font-family: var(--font-d);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+  max-width: 560px;
+  margin: 0 auto 32px;
+  letter-spacing: -0.02em;
+}
+.about-quote em { color: var(--blue); font-style: normal; }
+.cta-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.cta-btn {
+  padding: 11px 24px;
+  border-radius: 99px;
+  font-family: var(--font-d);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  letter-spacing: 0.01em;
+}
+.cta-primary {
+  background: var(--blue);
+  color: #fff;
+}
+.cta-primary:hover {
+  background: #6ba3f8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(79,142,247,0.35);
+}
+.cta-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border2);
+}
+.cta-secondary:hover {
+  background: var(--surface2);
+  transform: translateY(-2px);
+}
+
+/* section header util */
+.section-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--blue);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-h2 {
+  font-family: var(--font-d);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 12px;
+}
+.section-p {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+.section-p strong { color: var(--text); }
+
+/* divider */
+.section-divider {
+  width: 40px; height: 2px;
+  background: var(--blue);
+  border-radius: 99px;
+  margin: 0 auto 40px;
+  opacity: 0.5;
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — story.html
+═══════════════════════════════════════════════ */
+
+/* ── Tablet (≤1024px) ── */
+@media (max-width: 1024px) {
+  .section {
+    padding: 60px 6vw;
+  }
+  .section-sm {
+    padding: 60px 6vw;
+  }
+  .s1-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+  .s1-text h2 {
+    font-size: 1.8rem;
+  }
+  .bsd-ring {
+    width: 220px;
+    height: 220px;
+  }
+  .bsd-pct {
+    font-size: 3rem;
+  }
+  .mistake-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .shap-section-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .hero-h1 {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+  }
+  .hero-stats {
+    gap: 24px;
+  }
+  .chapter-nav {
+    right: 12px;
+  }
+  .pl-nodes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pl-connector-row {
+    display: none;
+  }
+  .findings-bento {
+    grid-template-columns: 1fr;
+  }
+  .roles-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .phase-timeline::before {
+    left: 31px;
+  }
+}
+
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {
+  .section {
+    padding: 60px 5vw;
+    min-height: auto;
+  }
+  .section-sm {
+    padding: 48px 5vw;
+  }
+
+  /* Back button */
+  .back-btn {
+    top: 16px;
+    left: 16px;
+    padding: 7px 12px 7px 10px;
+    font-size: 0.72rem;
+  }
+
+  /* Nav dots — hide on mobile */
+  .chapter-nav {
+    display: none;
+  }
+
+  /* Hero */
+  #s0 {
+    min-height: 100svh;
+    padding: 100px 5vw 60px;
+  }
+  .hero-h1 {
+    font-size: clamp(2rem, 8vw, 3rem);
+    margin-bottom: 16px;
+  }
+  .hero-sub {
+    font-size: 0.88rem;
+    margin-bottom: 28px;
+  }
+  .hero-stats {
+    flex-wrap: wrap;
+    gap: 0;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--surface);
+  }
+  .hs-item {
+    flex: 1;
+    min-width: calc(50% - 1px);
+    padding: 12px 8px;
+  }
+  .hs-item:nth-child(1),
+  .hs-item:nth-child(3) {
+    border-right: 1px solid var(--border);
+  }
+  .hs-item:nth-child(1),
+  .hs-item:nth-child(2) {
+    border-bottom: 1px solid var(--border);
+  }
+  .hs-sep { display: none; }
+  .hs-val { font-size: 1.5rem; }
+  .hero-scroll-hint { margin-top: 28px; }
+
+  /* Section 1 */
+  .s1-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    text-align: center;
+  }
+  .bsd-ring {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+  }
+  .bsd-pct { font-size: 2.6rem; }
+  .s1-text {
+    text-align: left;
+  }
+  .s1-text h2 { font-size: 1.7rem; }
+
+  /* Phase timeline */
+  .pt-item {
+    grid-template-columns: 40px 1fr;
+    gap: 14px;
+  }
+  .phase-timeline::before { left: 19px; }
+  .pt-circle {
+    width: 24px;
+    height: 24px;
+    font-size: 0.62rem;
+  }
+  .pt-body { padding: 14px 16px; }
+  .pt-title { font-size: 0.92rem; }
+  .pt-desc { font-size: 0.78rem; }
+
+  /* Section 3 mistake */
+  .mistake-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .mistake-text h2 { font-size: 1.7rem; }
+  .vs-metrics {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .vm-val { font-size: 1.1rem; }
+
+  /* SHAP */
+  .shap-section-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .shap-section-text h2 { font-size: 1.7rem; }
+  .sbr-item {
+    grid-template-columns: 90px 1fr 44px;
+    gap: 8px;
+  }
+  .sbr-feat { font-size: 0.62rem; }
+
+  /* Pipeline */
+  .pl-nodes {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .pl-connector-row { display: none; }
+  .pl-node { padding: 14px 10px; }
+  .pl-icon { font-size: 1.2rem; }
+  .pl-name { font-size: 0.76rem; }
+  .pl-detail { font-size: 0.6rem; }
+
+  /* Findings bento */
+  .findings-bento {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .fb-card { padding: 20px; }
+  .fc-stat { font-size: 1.8rem; }
+  .fc-bg-num { font-size: 5rem; }
+
+  /* About */
+  .about-name { font-size: 1.6rem; }
+  .about-quote { font-size: 1.05rem; }
+  .about-badges {
+    gap: 8px;
+  }
+  .about-badge {
+    font-size: 0.7rem;
+    padding: 6px 12px;
+  }
+  .cta-row {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cta-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ── Small mobile (≤480px) ── */
+@media (max-width: 480px) {
+  .section {
+    padding: 48px 4vw;
+  }
+  .hero-h1 {
+    font-size: 2rem;
+  }
+  .hero-pre {
+    font-size: 0.65rem;
+  }
+  .section-h2,
+  #s5 h2,
+  #s6 h2 {
+    font-size: 1.6rem;
+  }
+  .s1-text h2,
+  .mistake-text h2,
+  .shap-section-text h2 {
+    font-size: 1.5rem;
+  }
+  .bsd-ring {
+    width: 180px;
+    height: 180px;
+  }
+  .bsd-pct { font-size: 2.2rem; }
+  .pt-item {
+    grid-template-columns: 36px 1fr;
+    gap: 10px;
+  }
+  .pt-tags {
+    display: none;
+  }
+  .sbr-item {
+    grid-template-columns: 80px 1fr 40px;
+    gap: 6px;
+  }
+  .pl-nodes {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .pl-node { padding: 12px 8px; }
+  .vs-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .hs-val { font-size: 1.3rem; }
+  .hero-stats {
+    padding: 12px;
+  }
+  .about-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 1.2rem;
+  }
+  .fb-card {
+    padding: 16px;
+  }
+  .fc-stat { font-size: 1.5rem; }
+}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Back button -->
+<a class="back-btn" href="index.html">
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M9 11L5 7l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  Back to Dashboard
+</a>
+
+<!-- Chapter nav dots -->
+<nav class="chapter-nav" id="chapterNav">
+  <div class="cn-dot active" onclick="scrollToSection(0)" data-idx="0"><span class="cn-label">Intro</span></div>
+  <div class="cn-dot" onclick="scrollToSection(1)" data-idx="1"><span class="cn-label">The Problem</span></div>
+  <div class="cn-dot" onclick="scrollToSection(2)" data-idx="2"><span class="cn-label">The Build</span></div>
+  <div class="cn-dot" onclick="scrollToSection(3)" data-idx="3"><span class="cn-label">The Mistake</span></div>
+  <div class="cn-dot" onclick="scrollToSection(4)" data-idx="4"><span class="cn-label">SHAP Findings</span></div>
+  <div class="cn-dot" onclick="scrollToSection(5)" data-idx="5"><span class="cn-label">Pipeline</span></div>
+  <div class="cn-dot" onclick="scrollToSection(6)" data-idx="6"><span class="cn-label">Findings</span></div>
+  <div class="cn-dot" onclick="scrollToSection(7)" data-idx="7"><span class="cn-label">About</span></div>
+</nav>
+
+<!-- ══════════════════════════════════
+     SECTION 0 — HERO
+══════════════════════════════════ -->
+<section class="section" id="s0">
+  <div class="hero-canvas" id="heroCanvas"></div>
+  <div class="hero-content">
+    <div class="hero-pre">RetailIQ · Built by Yuvraj · 2026</div>
+    <h1 class="hero-h1">One question<br>drove <em>everything.</em></h1>
+    <p class="hero-sub">Why do 93% of e-commerce customers never return after their first order? I spent weeks inside 100,000 real transactions to find out.</p>
+    <div class="hero-stats">
+      <div class="hs-item">
+        <div class="hs-val text-blue" id="h-orders">0</div>
+        <div class="hs-label">Real orders</div>
+      </div>
+      <div class="hs-sep"></div>
+      <div class="hs-item">
+        <div class="hs-val text-green">0.777</div>
+        <div class="hs-label">Model AUC</div>
+      </div>
+      <div class="hs-sep"></div>
+      <div class="hs-item">
+        <div class="hs-val text-purple">9</div>
+        <div class="hs-label">DB tables</div>
+      </div>
+      <div class="hs-sep"></div>
+      <div class="hs-item">
+        <div class="hs-val text-amber">62</div>
+        <div class="hs-label">ML features</div>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>Scroll to explore</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SECTION 1 — THE PROBLEM
+══════════════════════════════════ -->
+<section class="section" id="s1">
+  <div class="s1-grid">
+    <div class="big-stat-display reveal">
+      <div class="bsd-ring">
+        <div class="bsd-center">
+          <div class="bsd-pct">93%</div>
+          <div class="bsd-sub">never placed<br>a second order</div>
+        </div>
+      </div>
+      <div class="bsd-legend">
+        <div class="bsd-leg-item">
+          <div class="bsd-leg-dot" style="background:var(--red)"></div>
+          Single-purchase (93%)
+        </div>
+        <div class="bsd-leg-item">
+          <div class="bsd-leg-dot" style="background:var(--green)"></div>
+          Returned (7%)
+        </div>
+      </div>
+    </div>
+    <div class="s1-text">
+      <div class="section-eyebrow reveal">The Problem</div>
+      <h2 class="reveal reveal-delay-1">The <em>real</em> cost of a bad first impression.</h2>
+      <p class="reveal reveal-delay-2">Every e-commerce company talks about customer acquisition. The real money is in the second purchase — and <strong>93% of customers on Olist's platform never made one.</strong></p>
+      <p class="reveal reveal-delay-3">That's not a marketing problem. It's a <strong>data problem</strong>. And data problems need data solutions. I built this platform to find the root cause — and predict who's going to leave before they do.</p>
+      <p class="reveal reveal-delay-4" style="font-size:0.78rem;color:var(--muted);font-style:italic;">Dataset: Olist Brazilian E-Commerce · 99,441 real orders · 2016–2018</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SECTION 2 — THE BUILD
+══════════════════════════════════ -->
+<section class="section section-sm" id="s2">
+  <div style="max-width:900px;margin:0 auto;width:100%">
+    <div class="section-eyebrow reveal" style="text-align:center">How it was built</div>
+    <h2 class="section-h2 reveal" style="text-align:center;margin-bottom:8px">Phase by phase. Decision by decision.</h2>
+    <div class="section-divider reveal"></div>
+
+    <div class="phase-timeline">
+
+      <div class="pt-item reveal">
+        <div class="pt-num-wrap">
+          <div class="pt-circle" style="border-color:var(--blue);color:var(--blue)">01</div>
+        </div>
+        <div class="pt-body">
+          <div class="pt-role" style="background:rgba(79,142,247,0.1);color:var(--blue)">Data Engineer</div>
+          <div class="pt-title">Schema Design & Ingestion Pipeline</div>
+          <div class="pt-desc">Designed 9 PostgreSQL tables with proper FK constraints and indexes — not a CSV dump. Two schemas: <code style="background:rgba(255,255,255,0.05);padding:1px 6px;border-radius:4px;font-size:0.78rem;color:var(--blue)">raw</code> and <code style="background:rgba(255,255,255,0.05);padding:1px 6px;border-radius:4px;font-size:0.78rem;color:var(--blue)">analytics</code>. Batch-insert pipeline loads all 99K rows with full logging and error handling.</div>
+          <div class="pt-tags">
+            <span class="pt-tag">PostgreSQL</span>
+            <span class="pt-tag">SQLAlchemy</span>
+            <span class="pt-tag">Medallion Architecture</span>
+            <span class="pt-tag">Python</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-item reveal">
+        <div class="pt-num-wrap">
+          <div class="pt-circle" style="border-color:var(--purple);color:var(--purple)">02</div>
+        </div>
+        <div class="pt-body">
+          <div class="pt-role" style="background:rgba(167,139,250,0.1);color:var(--purple)">Data Analyst</div>
+          <div class="pt-title">5 SQL Queries — Real Business Questions</div>
+          <div class="pt-desc">Revenue trend with LAG window functions. RFM segmentation with NTILE scoring across 96,478 customers. Delivery vs satisfaction with PERCENTILE_CONT. Product health scoring. Seller scorecards with DENSE_RANK. Each query answers something a real business would pay to know.</div>
+          <div class="pt-tags">
+            <span class="pt-tag">CTEs</span>
+            <span class="pt-tag">Window Functions</span>
+            <span class="pt-tag">NTILE</span>
+            <span class="pt-tag">RFM Framework</span>
+            <span class="pt-tag">PERCENTILE_CONT</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-item reveal">
+        <div class="pt-num-wrap">
+          <div class="pt-circle" style="border-color:var(--red);color:var(--red)">03</div>
+        </div>
+        <div class="pt-body" style="border-color:rgba(248,113,113,0.2);background:rgba(248,113,113,0.03)">
+          <div class="pt-role" style="background:rgba(248,113,113,0.1);color:var(--red)">Data Scientist · The Mistake</div>
+          <div class="pt-title">Churn Model v1 — 99.9% Precision (Wrong)</div>
+          <div class="pt-desc">First model hit 99.9% precision. I immediately knew something was wrong. After investigation: classic target leakage — recency_days was both defining the churn label AND used as a feature. CV AUC was 0.56. The model wasn't learning — it was memorising a rule. Scrapped entirely.</div>
+          <div class="pt-tags">
+            <span class="pt-tag" style="color:var(--red);border-color:rgba(248,113,113,0.3)">Target Leakage Detected</span>
+            <span class="pt-tag">CV AUC: 0.56</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-item reveal">
+        <div class="pt-num-wrap">
+          <div class="pt-circle" style="border-color:var(--green);color:var(--green)">04</div>
+        </div>
+        <div class="pt-body" style="border-color:rgba(52,211,153,0.2);background:rgba(52,211,153,0.03)">
+          <div class="pt-role" style="background:rgba(52,211,153,0.1);color:var(--green)">Data Scientist · Fixed</div>
+          <div class="pt-title">Churn Model v2 — Leakage-Free Frame</div>
+          <div class="pt-desc">New definition: given first-order signals only, predict whether the customer will ever place a second order. Recency and frequency completely excluded. RandomizedSearchCV — 30 iterations. 5-fold CV. SHAP explainability reveals freight_value as #1 predictor — a real, actionable business insight.</div>
+          <div class="pt-tags">
+            <span class="pt-tag" style="color:var(--green);border-color:rgba(52,211,153,0.3)">AUC: 0.777</span>
+            <span class="pt-tag" style="color:var(--green);border-color:rgba(52,211,153,0.3)">CV: 0.760±0.009</span>
+            <span class="pt-tag">SHAP</span>
+            <span class="pt-tag">XGBoost</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-item reveal">
+        <div class="pt-num-wrap">
+          <div class="pt-circle" style="border-color:var(--amber);color:var(--amber)">05</div>
+        </div>
+        <div class="pt-body">
+          <div class="pt-role" style="background:rgba(251,191,36,0.1);color:var(--amber)">Full Stack</div>
+          <div class="pt-title">API & Dashboard</div>
+          <div class="pt-desc">FastAPI with 9 endpoints serving live PostgreSQL data and real-time ML predictions. Dashboard as pure HTML/JS — no Dash, no framework, total CSS control. Deploys anywhere.</div>
+          <div class="pt-tags">
+            <span class="pt-tag">FastAPI</span>
+            <span class="pt-tag">Pydantic</span>
+            <span class="pt-tag">Pure HTML/JS</span>
+            <span class="pt-tag">Live DB</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SECTION 3 — THE MISTAKE (DETAIL)
+══════════════════════════════════ -->
+<section class="section" id="s3">
+  <div class="mistake-grid">
+    <div class="mistake-text">
+      <div class="section-eyebrow reveal">The Hardest Part</div>
+      <h2 class="reveal reveal-delay-1">When 99.9% precision is a red flag.</h2>
+      <p class="section-p reveal reveal-delay-2">Any data scientist should immediately be suspicious of near-perfect metrics on a real-world dataset. <strong>I was.</strong></p>
+      <p class="section-p reveal reveal-delay-3">The diagnosis: <code>recency_days</code> was both defining the churn label (recency > 180 = churned) AND used as a feature. The model was memorising a threshold, not learning customer behaviour.</p>
+      <p class="section-p reveal reveal-delay-4">The fix wasn't a hyperparameter tweak. It required <strong>rethinking the entire ML frame</strong> — new label definition, new feature set, rebuilt from scratch. That's what real data science looks like.</p>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="vs-cards">
+        <div class="vs-card vs-card-bad">
+          <div class="vs-card-label" style="color:var(--red)">❌ Version 1 — Leaked model</div>
+          <div class="vs-metrics">
+            <div class="vs-metric">
+              <div class="vm-val" style="color:var(--red)">99.9%</div>
+              <div class="vm-label">Train Precision</div>
+            </div>
+            <div class="vs-metric">
+              <div class="vm-val" style="color:var(--red)">0.56</div>
+              <div class="vm-label">CV AUC</div>
+            </div>
+            <div class="vs-metric">
+              <div class="vm-val" style="color:var(--red)">~Random</div>
+              <div class="vm-label">Real Performance</div>
+            </div>
+          </div>
+          <div class="vs-note">recency_days used as feature → directly encodes the label → model learns nothing meaningful</div>
+        </div>
+        <div class="vs-connector">rebuilt from scratch</div>
+        <div class="vs-card vs-card-good">
+          <div class="vs-card-label" style="color:var(--green)">✅ Version 2 — Leakage-free</div>
+          <div class="vs-metrics">
+            <div class="vs-metric">
+              <div class="vm-val" style="color:var(--green)">0.777</div>
+              <div class="vm-label">Test AUC</div>
+            </div>
+            <div class="vs-metric">
+              <div class="vm-val" style="color:var(--green)">0.760</div>
+              <div class="vm-label">CV AUC</div>
+            </div>
+            <div class="vs-metric">
+              <div class="vm-val" style="color:var(--green)">±0.009</div>
+              <div class="vm-label">CV Stability</div>
+            </div>
+          </div>
+          <div class="vs-note">First-order signals only · recency & frequency excluded · 62 behavioural features · 5-fold CV</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SECTION 4 — SHAP FINDINGS
+══════════════════════════════════ -->
+<section class="section" id="s4">
+  <div class="shap-section-grid">
+    <div class="shap-section-text">
+      <div class="section-eyebrow reveal">SHAP Explainability</div>
+      <h2 class="section-h2 reveal reveal-delay-1">The model told us something the business didn't know.</h2>
+      <p class="section-p reveal reveal-delay-2"><strong>freight_value is the #1 churn predictor</strong> — not delivery speed, not review score. Customers who pay disproportionately high freight relative to order value never come back.</p>
+      <p class="section-p reveal reveal-delay-3">This is "surprise cost shock" — the customer feels deceived. The product was R$50, the delivery was R$25. They don't complain. They just don't return.</p>
+      <p class="section-p reveal reveal-delay-4"><strong>Business implication:</strong> A free-shipping threshold above R$150 would directly attack the #1 churn driver — no loyalty programme needed.</p>
+    </div>
+    <div class="shap-chart-container reveal reveal-delay-2">
+      <div class="shap-chart-title">
+        Top churn predictors — Mean |SHAP| value
+        <span>from your model.pkl</span>
+      </div>
+      <div class="shap-bar-rows" id="shapBars">
+        <div class="sbr-item">
+          <div class="sbr-feat">freight_value</div>
+          <div class="sbr-track"><div class="sbr-fill" style="background:var(--red)" data-w="100"></div></div>
+          <div class="sbr-val">0.196</div>
+        </div>
+        <div class="sbr-item">
+          <div class="sbr-feat">installments</div>
+          <div class="sbr-track"><div class="sbr-fill" style="background:var(--amber)" data-w="87"></div></div>
+          <div class="sbr-val">0.171</div>
+        </div>
+        <div class="sbr-item">
+          <div class="sbr-feat">avg_item_price</div>
+          <div class="sbr-track"><div class="sbr-fill" style="background:var(--amber)" data-w="77"></div></div>
+          <div class="sbr-val">0.150</div>
+        </div>
+        <div class="sbr-item">
+          <div class="sbr-feat">promised_days</div>
+          <div class="sbr-track"><div class="sbr-fill" style="background:var(--blue)" data-w="68"></div></div>
+          <div class="sbr-val">0.134</div>
+        </div>
+        <div class="sbr-item">
+          <div class="sbr-feat">actual_days</div>
+          <div class="sbr-track"><div class="sbr-fill" style="background:var(--blue)" data-w="55"></div></div>
+          <div class="sbr-val">0.108</div>
+        </div>
+        <div class="sbr-item">
+          <div class="sbr-feat">review_score</div>
+          <div class="sbr-track"><div class="sbr-fill" style="background:var(--purple)" data-w="48"></div></div>
+          <div class="sbr-val">0.094</div>
+        </div>
+        <div class="sbr-item">
+          <div class="sbr-feat">freight_pct</div>
+          <div class="sbr-track"><div class="sbr-fill" style="background:var(--purple)" data-w="38"></div></div>
+          <div class="sbr-val">0.074</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SECTION 5 — PIPELINE
+══════════════════════════════════ -->
+<section class="section section-sm" id="s5">
+  <div class="section-eyebrow reveal" style="text-align:center">End-to-end architecture</div>
+  <h2 class="reveal" style="font-family:var(--font-d);font-size:2rem;font-weight:800;letter-spacing:-0.04em;text-align:center;margin-bottom:8px">From raw CSV to live prediction in 8 steps.</h2>
+  <div class="section-divider reveal"></div>
+  <div class="pipeline-canvas">
+    <div class="pl-nodes reveal">
+      <div class="pl-node">
+        <div class="pl-icon">📦</div>
+        <div class="pl-name">Raw CSV</div>
+        <div class="pl-detail">9 files · Kaggle Olist · 99K rows</div>
+      </div>
+      <div class="pl-node">
+        <div class="pl-icon">🐍</div>
+        <div class="pl-name">Ingestion</div>
+        <div class="pl-detail">Python · SQLAlchemy · batch inserts</div>
+      </div>
+      <div class="pl-node highlight">
+        <div class="pl-icon">🗄️</div>
+        <div class="pl-name">PostgreSQL</div>
+        <div class="pl-detail">raw + analytics · 9 tables · 7 indexes</div>
+      </div>
+      <div class="pl-node">
+        <div class="pl-icon">📐</div>
+        <div class="pl-name">SQL Layer</div>
+        <div class="pl-detail">5 queries · CTEs · window functions</div>
+      </div>
+    </div>
+    <div class="pl-connector-row reveal">
+      <div class="pl-connector"><div class="pl-arrow-line"></div>→<div class="pl-arrow-line"></div></div>
+      <div class="pl-connector"><div class="pl-arrow-line"></div>→<div class="pl-arrow-line"></div></div>
+      <div class="pl-connector"><div class="pl-arrow-line"></div>→<div class="pl-arrow-line"></div></div>
+    </div>
+    <div class="pl-nodes reveal">
+      <div class="pl-node">
+        <div class="pl-icon">🧮</div>
+        <div class="pl-name">Feature Eng.</div>
+        <div class="pl-detail">Pandas · 62 leakage-free features</div>
+      </div>
+      <div class="pl-node highlight">
+        <div class="pl-icon">🤖</div>
+        <div class="pl-name">XGBoost</div>
+        <div class="pl-detail">AUC 0.777 · SHAP · 5-fold CV</div>
+      </div>
+      <div class="pl-node">
+        <div class="pl-icon">⚡</div>
+        <div class="pl-name">FastAPI</div>
+        <div class="pl-detail">9 endpoints · Pydantic · live DB</div>
+      </div>
+      <div class="pl-node highlight">
+        <div class="pl-icon">🖥️</div>
+        <div class="pl-name">Dashboard</div>
+        <div class="pl-detail">Pure HTML · SVG charts · real-time</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SECTION 6 — FINDINGS
+══════════════════════════════════ -->
+<section class="section section-sm" id="s6">
+  <div class="section-header">
+    <div class="section-eyebrow reveal">What the data said</div>
+    <h2 class="reveal">Four findings that matter.</h2>
+    <div class="section-divider reveal"></div>
+  </div>
+  <div class="findings-bento">
+    <div class="fb-card reveal" style="--fc-card:var(--red)">
+      <div class="fc-bg-num">01</div>
+      <div class="fc-stat">4.29 → 1.73</div>
+      <div class="fc-title">Delivery SLA is the #1 retention lever</div>
+      <div class="fc-body">Late delivery (7+ days) destroys avg customer rating. Even 1 day late drops it from 4.29 to 2.6. Tighten SLA on bulky categories — no discount needed.</div>
+    </div>
+    <div class="fb-card reveal reveal-delay-1" style="--fc-card:var(--blue)">
+      <div class="fc-bg-num">02</div>
+      <div class="fc-stat">SHAP #1</div>
+      <div class="fc-title">Freight cost predicts churn better than satisfaction</div>
+      <div class="fc-body">Surprise shipping costs create "cost shock" — the strongest signal that a customer won't return. Free-shipping above R$150 would directly address this.</div>
+    </div>
+    <div class="fb-card reveal reveal-delay-2" style="--fc-card:var(--green)">
+      <div class="fc-bg-num">03</div>
+      <div class="fc-stat">10× LTV</div>
+      <div class="fc-title">Champions are worth protecting at any cost</div>
+      <div class="fc-body">RFM segmentation: Champions avg R$318 LTV vs R$32 for Lost. 15,526 Champions identified. A referral programme targeting this group would compound growth.</div>
+    </div>
+    <div class="fb-card reveal reveal-delay-3" style="--fc-card:var(--amber)">
+      <div class="fc-bg-num">04</div>
+      <div class="fc-stat">R$1.24M</div>
+      <div class="fc-title">health_beauty is the benchmark</div>
+      <div class="fc-body">Highest revenue, high satisfaction, manageable logistics. Every other category should benchmark against it. The data makes the case without ambiguity.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SECTION 7 — ABOUT
+══════════════════════════════════ -->
+<section class="section" id="s7">
+  <div class="about-grid">
+    <div class="about-avatar reveal">
+    <img src="./yuvraj.png" alt="Yuvraj">
+    </div>
+    <div class="about-name reveal">Yuvraj</div>
+    <div class="about-role reveal">Data Scientist | Data Analyst | Data Engineer | AI-ML Engineer</div>
+    <div class="about-badges reveal">
+      <div class="about-badge"><span class="ab-icon">🏆</span>Global Hackathon Finalist · Outlier.ai / Scale AI</div>
+      <div class="about-badge"><span class="ab-icon">☁️</span>Oracle Cloud AI · 96% & 98%</div>
+      <div class="about-badge"><span class="ab-icon">🤖</span>RLHF · Deccan AI Inc. (USA)</div>
+      <div class="about-badge"><span class="ab-icon">📊</span>Data Science Intern · Gaurav Industries</div>
+    </div>
+    <div class="about-quote reveal">
+      "I didn't build RetailIQ to learn tools.<br>I built it to prove I can <em>think</em> with data."
+    </div>
+    <div class="cta-row reveal">
+      <a class="cta-btn cta-primary" href="https://github.com/YUVRAJ-NOVA" target="_blank">GitHub — YUVRAJ-NOVA</a>
+      <a class="cta-btn cta-secondary" href="index.html">Explore the Dashboard</a>
+    </div>
+  </div>
+</section>
+
+<script>
+// ══════════════════════════════════
+// PARTICLE CANVAS — Hero background
+// ══════════════════════════════════
+(function() {
+  const wrap = document.getElementById('heroCanvas');
+  const canvas = document.createElement('canvas');
+  wrap.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = wrap.offsetWidth;
+    H = canvas.height = wrap.offsetHeight;
+  }
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x  = Math.random() * W;
+      this.y  = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.r  = Math.random() * 1.5 + 0.5;
+      this.alpha = Math.random() * 0.4 + 0.1;
+      const colors = ['79,142,247','167,139,250','52,211,153','251,191,36'];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+      ctx.fill();
+    }
+  }
+
+  resize();
+  for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+  // Draw connections
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(79,142,247,${0.06 * (1 - dist/100)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    drawConnections();
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(loop);
+  }
+  loop();
+  window.addEventListener('resize', resize);
+})();
+
+// ══════════════════════════════════
+// COUNTER ANIMATION
+// ══════════════════════════════════
+function animCount(el, target, fmt, dur = 1200) {
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(target * ease);
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(target);
+  }
+  requestAnimationFrame(step);
+}
+
+setTimeout(() => {
+  const el = document.getElementById('h-orders');
+  if (el) animCount(el, 99441, v => Math.round(v).toLocaleString('en-IN'), 1400);
+}, 800);
+
+// ══════════════════════════════════
+// SCROLL PROGRESS BAR
+// ══════════════════════════════════
+const progressBar = document.getElementById('progressBar');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  progressBar.style.width = pct + '%';
+});
+
+// ══════════════════════════════════
+// SECTION DETECTION + NAV DOTS
+// ══════════════════════════════════
+const sections = ['s0','s1','s2','s3','s4','s5','s6','s7'];
+const dots = document.querySelectorAll('.cn-dot');
+
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+      const idx = sections.indexOf(entry.target.id);
+      dots.forEach(d => d.classList.remove('active'));
+      if (dots[idx]) dots[idx].classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) sectionObserver.observe(el);
+});
+
+function scrollToSection(idx) {
+  const el = document.getElementById(sections[idx]);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════
+// REVEAL ON SCROLL
+// ══════════════════════════════════
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ══════════════════════════════════
+// SHAP BARS ANIMATE ON VISIBLE
+// ══════════════════════════════════
+const shapObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.sbr-fill').forEach((bar, i) => {
+        setTimeout(() => {
+          bar.style.width = bar.dataset.w + '%';
+        }, i * 100);
+      });
+      shapObserver.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+
+const shapSection = document.getElementById('s4');
+if (shapSection) shapObserver.observe(shapSection);
+</script>
+</body>
+</html>

@@ -1,0 +1,3654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailIQ — Customer Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --bg:          #080810;
+  --surface:     #0f0f1a;
+  --surface2:    #16162a;
+  --border:      rgba(255,255,255,0.07);
+  --border2:     rgba(255,255,255,0.12);
+  --text:        #e8e8f0;
+  --muted:       #6b6b8a;
+  --muted2:      #9090b0;
+  --blue:        #4f8ef7;
+  --blue-glow:   rgba(79,142,247,0.15);
+  --green:       #34d399;
+  --green-glow:  rgba(52,211,153,0.15);
+  --amber:       #fbbf24;
+  --amber-glow:  rgba(251,191,36,0.15);
+  --red:         #f87171;
+  --red-glow:    rgba(248,113,113,0.15);
+  --purple:      #a78bfa;
+  --purple-glow: rgba(167,139,250,0.15);
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --radius:       14px;
+  --radius-sm:    8px;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+::selection { background: rgba(79,142,247,0.3); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 99px; }
+
+/* ═══════════════════════════════════════════════
+   LAYOUT — SIDEBAR + MAIN
+═══════════════════════════════════════════════ */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  padding: 28px 0 24px;
+}
+
+.sidebar-brand {
+  padding: 0 24px 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.sidebar-brand .wordmark {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.sidebar-brand .wordmark span { color: var(--blue); }
+.sidebar-brand .tagline {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 5px;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+
+.nav-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  padding: 0 24px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 24px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border-left: 2px solid transparent;
+  color: var(--muted2);
+  font-size: 0.85rem;
+  font-weight: 500;
+  position: relative;
+  text-decoration: none;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.active {
+  color: var(--blue);
+  background: var(--blue-glow);
+  border-left-color: var(--blue);
+}
+.nav-item .nav-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+.nav-item.active .nav-icon { opacity: 1; }
+
+.nav-spacer { height: 12px; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px 24px 0;
+  border-top: 1px solid var(--border);
+}
+.sidebar-footer .built-by {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.sidebar-footer .built-by strong {
+  color: var(--text);
+  font-weight: 600;
+  display: block;
+  font-size: 0.78rem;
+}
+.live-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  color: var(--green);
+  margin-top: 8px;
+}
+.live-dot::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s ease infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ── MAIN CONTENT ── */
+.main {
+  margin-left: 240px;
+  flex: 1;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE TRANSITION LOADER
+═══════════════════════════════════════════════ */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.page-loader.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.loader-ring {
+  width: 44px; height: 44px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE WRAPPER
+═══════════════════════════════════════════════ */
+.page {
+  display: none;
+  padding: 40px 44px;
+  animation: fadeUp 0.35s ease forwards;
+  min-height: 100vh;
+}
+.page.active { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-header {
+  margin-bottom: 36px;
+}
+.page-header .eyebrow {
+  font-size: 0.72rem;
+  color: var(--blue);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.page-header h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.page-header p {
+  color: var(--muted2);
+  font-size: 0.88rem;
+  margin-top: 8px;
+  max-width: 520px;
+}
+
+/* ═══════════════════════════════════════════════
+   CARDS & SURFACES
+═══════════════════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.card-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════
+   KPI METRIC CARDS
+═══════════════════════════════════════════════ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (max-width: 1400px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+.kpi-card:hover { border-color: var(--border2); }
+.kpi-card .accent-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 99px;
+}
+.kpi-card .kpi-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 10px;
+  margin-top: 8px;
+}
+.kpi-card .kpi-value {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.kpi-card .kpi-sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* ═══════════════════════════════════════════════
+   GRID LAYOUTS
+═══════════════════════════════════════════════ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-28 { margin-bottom: 28px; }
+
+/* ═══════════════════════════════════════════════
+   SVG CHART CONTAINERS
+═══════════════════════════════════════════════ */
+.chart-wrap {
+  width: 100%;
+  overflow: visible;
+}
+.chart-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.chart-subtitle {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+  margin-top: -10px;
+}
+
+/* ═══════════════════════════════════════════════
+   TOOLTIP
+═══════════════════════════════════════════════ */
+.tooltip {
+  position: fixed;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: var(--text);
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  max-width: 200px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  line-height: 1.5;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip strong { color: var(--blue); display: block; margin-bottom: 2px; }
+
+/* ═══════════════════════════════════════════════
+   SEGMENT TREEMAP
+═══════════════════════════════════════════════ */
+.treemap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 10px;
+  height: 320px;
+}
+.treemap-cell {
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: default;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+.treemap-cell:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+.treemap-cell.big { grid-column: span 2; }
+.treemap-cell .seg-name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.treemap-cell .seg-count {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+}
+.treemap-cell .seg-pct {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+.treemap-cell .seg-action {
+  font-size: 0.7rem;
+  opacity: 0.65;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════
+   DELIVERY SIGNAL BARS
+═══════════════════════════════════════════════ */
+.signal-bars-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.signal-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 48px;
+  align-items: center;
+  gap: 14px;
+}
+.signal-label {
+  font-size: 0.76rem;
+  color: var(--muted2);
+  font-weight: 500;
+  text-align: right;
+}
+.signal-track {
+  height: 8px;
+  background: var(--surface2);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+.signal-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+.signal-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: right;
+  font-family: var(--font-display);
+}
+
+/* ═══════════════════════════════════════════════
+   CHURN PREDICTOR FORM
+═══════════════════════════════════════════════ */
+.predict-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label {
+  font-size: 0.72rem;
+  color: var(--muted2);
+  font-weight: 500;
+}
+.form-group input,
+.form-group select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b6b8a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+.form-section-label {
+  grid-column: span 2;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.btn-predict {
+  grid-column: span 2;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 13px 24px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  letter-spacing: 0.01em;
+  margin-top: 8px;
+}
+.btn-predict:hover {
+  background: #6ba3f8;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(79,142,247,0.3);
+}
+.btn-predict:active { transform: translateY(0); }
+.btn-predict.loading { opacity: 0.7; cursor: wait; }
+
+/* Gauge */
+.gauge-wrap {
+  position: sticky;
+  top: 40px;
+}
+.gauge-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  text-align: center;
+}
+.gauge-svg-wrap {
+  position: relative;
+  width: 200px;
+  margin: 0 auto 20px;
+}
+.gauge-center-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -10%);
+  text-align: center;
+}
+.gauge-pct {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.gauge-sublabel {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: 3px;
+}
+.risk-badge {
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 99px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 14px;
+}
+.gauge-rec {
+  font-size: 0.8rem;
+  color: var(--muted2);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.risk-factors {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  text-align: left;
+}
+.risk-factor-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-size: 0.75rem;
+  color: var(--muted2);
+  line-height: 1.4;
+}
+.risk-factors-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.gauge-placeholder {
+  padding: 48px 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+.gauge-placeholder .ph-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+/* ═══════════════════════════════════════════════
+   STORY PAGE
+═══════════════════════════════════════════════ */
+.story-hero {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 48px 52px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.story-hero::after {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, var(--blue-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.story-hero h2 {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  max-width: 480px;
+}
+.story-hero h2 em {
+  color: var(--blue);
+  font-style: normal;
+}
+.story-hero p {
+  color: var(--muted2);
+  font-size: 0.92rem;
+  max-width: 520px;
+  line-height: 1.7;
+}
+.story-meta {
+  display: flex;
+  gap: 32px;
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.story-meta-item .label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.story-meta-item .value {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Phase timeline */
+.phase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.phase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+.phase-card:hover { border-color: var(--border2); }
+.phase-card .phase-num {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--border2);
+  position: absolute;
+  top: 12px; right: 20px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.phase-card .phase-role {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  padding: 3px 10px;
+  border-radius: 99px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.phase-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.phase-card p {
+  font-size: 0.8rem;
+  color: var(--muted2);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.phase-card .phase-challenge {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.75rem;
+  color: var(--muted2);
+  border-left: 2px solid var(--amber);
+  line-height: 1.5;
+}
+.phase-card .phase-challenge strong {
+  color: var(--amber);
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Tech pipeline */
+.tech-pipeline {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 28px;
+}
+.tech-pipeline h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+.pipeline-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.pipeline-node {
+  flex-shrink: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  text-align: center;
+  min-width: 100px;
+}
+.pipeline-node .p-icon { font-size: 1.3rem; margin-bottom: 5px; }
+.pipeline-node .p-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.pipeline-node .p-tool {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.pipeline-arrow {
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+/* Roles row */
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.role-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.role-card .role-icon { font-size: 1.8rem; margin-bottom: 12px; }
+.role-card .role-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.role-card ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.role-card ul li {
+  font-size: 0.76rem;
+  color: var(--muted2);
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.4;
+}
+.role-card ul li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--blue);
+  font-size: 1.1rem;
+  line-height: 1;
+  top: 1px;
+}
+
+/* Key findings */
+.findings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.finding-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.finding-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 48px;
+}
+.finding-text h4 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+.finding-text p {
+  font-size: 0.77rem;
+  color: var(--muted2);
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════
+   OVERVIEW PAGE HERO
+═══════════════════════════════════════════════ */
+.overview-hero {
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(79,142,247,0.05) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 40px;
+  margin-bottom: 28px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.overview-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(79,142,247,0.08) 0%, transparent 65%);
+  pointer-events: none;
+}
+.overview-hero h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+.overview-hero h2 em {
+  color: var(--blue);
+  font-style: normal;
+}
+.overview-hero p {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  line-height: 1.6;
+  max-width: 460px;
+}
+.overview-model-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  text-align: center;
+  min-width: 160px;
+  flex-shrink: 0;
+}
+.overview-model-badge .auc-val {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--green);
+  letter-spacing: -0.04em;
+}
+.overview-model-badge .auc-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.overview-model-badge .auc-sub {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* Key insight callout */
+.insight-callout {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.insight-callout .ic-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.insight-callout .ic-text {
+  font-size: 0.82rem;
+  color: var(--muted2);
+  line-height: 1.5;
+}
+.insight-callout .ic-text strong { color: var(--text); }
+
+/* ═══════════════════════════════════════════════
+   MISC UTILITIES
+═══════════════════════════════════════════════ */
+.text-blue   { color: var(--blue); }
+.text-green  { color: var(--green); }
+.text-amber  { color: var(--amber); }
+.text-red    { color: var(--red); }
+.text-purple { color: var(--purple); }
+.text-muted  { color: var(--muted2); }
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* Bar chart axis */
+.axis-line {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.axis-text {
+  fill: var(--muted);
+  font-size: 11px;
+  font-family: var(--font-body);
+}
+.bar-label {
+  fill: var(--text);
+  font-size: 11px;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+/* Revenue chart legend */
+.chart-legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.73rem;
+  color: var(--muted2);
+}
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+/* ═══════════════════════════════════════════════
+   STORY PAGE — REBUILT
+═══════════════════════════════════════════════ */
+
+/* Hero */
+.story-hero-full {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+  align-items: start;
+}
+.story-eyebrow {
+  font-size: 0.72rem;
+  color: var(--blue);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+}
+.story-hero-h1 {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.story-hero-h1 em { color: var(--blue); font-style: normal; }
+.story-hero-p {
+  font-size: 0.88rem;
+  color: var(--muted2);
+  line-height: 1.7;
+  max-width: 440px;
+  margin-bottom: 20px;
+}
+.story-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.stag {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 0.72rem;
+  color: var(--muted2);
+  font-weight: 500;
+}
+
+/* Right side stats */
+.story-stat-cluster {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.stat-big { text-align: center; }
+.stat-big .stat-val {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.stat-big .stat-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+}
+.stat-small { text-align: center; }
+.stat-val-sm {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.stat-label-sm {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.stat-insight-card {
+  background: rgba(248,113,113,0.06);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.sic-num {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  letter-spacing: -0.04em;
+}
+.sic-text {
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* Section divider */
+.section-label-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.section-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.section-divider-text {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* Roles row */
+.roles-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.role-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--rc);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+.role-pill:hover { border-color: var(--rc); }
+.role-pill-icon { font-size: 1.4rem; margin-bottom: 10px; }
+.role-pill-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--rc);
+  margin-bottom: 10px;
+}
+.role-pill-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.role-pill-list li {
+  font-size: 0.76rem;
+  color: var(--muted2);
+  padding-left: 12px;
+  position: relative;
+  line-height: 1.4;
+}
+.role-pill-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--rc);
+  font-size: 0.7rem;
+}
+
+/* Chapters */
+.chapter {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.chapter-dark {
+  background: rgba(248,113,113,0.03);
+  border-color: rgba(248,113,113,0.15);
+}
+.chapter-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.chapter-num {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.06);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  flex-shrink: 0;
+  min-width: 80px;
+}
+.chapter-role-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.chapter-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.chapter-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.chapter-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.chapter-text p {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+.chapter-text p strong { color: var(--text); }
+.chapter-text code {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.8rem;
+  color: var(--blue);
+  font-family: 'Courier New', monospace;
+}
+.chapter-callout {
+  background: var(--surface2);
+  border-left: 3px solid;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  color: var(--muted2);
+  line-height: 1.6;
+  margin-top: 16px;
+}
+.chapter-callout strong { display: block; margin-bottom: 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* Schema visual */
+.chapter-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.schema-visual {
+  position: relative;
+  width: 220px;
+  height: 220px;
+}
+.schema-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface2);
+  border: 2px solid var(--blue);
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--blue);
+  white-space: nowrap;
+  z-index: 2;
+}
+.schema-satellites {
+  position: absolute;
+  inset: 0;
+}
+.schema-sat {
+  position: absolute;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.65rem;
+  color: var(--muted2);
+  font-weight: 500;
+  white-space: nowrap;
+  top: 50%; left: 50%;
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--sa))
+    translateX(88px)
+    rotate(calc(-1 * var(--sa)));
+}
+.schema-legend {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Delivery drop visual */
+.delivery-drop-visual {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  width: 100%;
+}
+.ddv-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted2);
+  margin-bottom: 14px;
+}
+.ddv-bars { display: flex; flex-direction: column; gap: 10px; }
+.ddv-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+}
+.ddv-bucket { font-size: 0.7rem; color: var(--muted); text-align: right; }
+.ddv-track { height: 8px; background: var(--surface); border-radius: 99px; overflow: hidden; }
+.ddv-fill { height: 100%; border-radius: 99px; }
+.ddv-val { font-size: 0.78rem; font-weight: 700; }
+.ddv-note { font-size: 0.65rem; color: var(--muted); margin-top: 12px; }
+
+/* Leakage visual */
+.leakage-visual {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  width: 100%;
+}
+.lv-title { font-size: 0.72rem; font-weight: 600; color: var(--muted2); margin-bottom: 12px; }
+.lv-box {
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 8px;
+}
+.lv-bad { background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.2); }
+.lv-good { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); }
+.lv-box-label { font-size: 0.72rem; font-weight: 700; margin-bottom: 8px; }
+.lv-metric { font-size: 0.75rem; color: var(--muted2); margin-bottom: 4px; }
+.lv-metric span { font-weight: 700; }
+.lv-feature { font-size: 0.68rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+.lv-arrow { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 4px 0; }
+
+/* SHAP visual */
+.shap-visual {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  width: 100%;
+}
+.shap-title { font-size: 0.72rem; font-weight: 600; color: var(--muted2); margin-bottom: 12px; }
+.shap-bars { display: flex; flex-direction: column; gap: 8px; }
+.shap-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 40px;
+  align-items: center;
+  gap: 8px;
+}
+.shap-feat { font-size: 0.7rem; color: var(--muted2); text-align: right; font-family: 'Courier New', monospace; }
+.shap-track { height: 6px; background: var(--surface); border-radius: 99px; overflow: hidden; }
+.shap-fill { height: 100%; border-radius: 99px; }
+.shap-val { font-size: 0.72rem; font-weight: 700; color: var(--text); }
+.shap-note { font-size: 0.65rem; color: var(--muted); margin-top: 12px; }
+
+/* Pipeline scroll */
+.pipeline-scroll-wrap {
+  overflow-x: auto;
+  margin-bottom: 40px;
+  padding-bottom: 8px;
+}
+.pipeline-scroll {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: max-content;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.ps-node {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.ps-node.ps-highlight {
+  border-color: var(--blue);
+  background: var(--blue-glow);
+}
+.ps-icon { font-size: 1.3rem; margin-bottom: 5px; }
+.ps-name { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+.ps-detail { font-size: 0.62rem; color: var(--muted); margin-top: 3px; max-width: 110px; line-height: 1.4; }
+.ps-arrow { font-size: 1rem; color: var(--muted); padding: 0 10px; flex-shrink: 0; }
+
+/* Findings 2×2 */
+.findings-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.finding-big {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--fc);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+.finding-big:hover { border-color: var(--fc); }
+.fb-num {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--fc);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+.fb-stat {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--fc);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.fb-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.fb-body {
+  font-size: 0.76rem;
+  color: var(--muted2);
+  line-height: 1.5;
+}
+
+/* Story footer */
+.story-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.sf-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.sf-sub { font-size: 0.72rem; color: var(--muted); }
+.sf-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sf-link {
+  font-size: 0.75rem;
+  color: var(--muted2);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+a.sf-link:hover { color: var(--blue); }
+.sf-sep { color: var(--border2); }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — index.html
+═══════════════════════════════════════════════ */
+
+/* ── Tablet (≤1200px) ── */
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .predict-layout {
+    grid-template-columns: 1fr;
+  }
+  .gauge-wrap {
+    position: static;
+  }
+  .grid-2-1 {
+    grid-template-columns: 1fr;
+  }
+  .grid-1-2 {
+    grid-template-columns: 1fr;
+  }
+  .overview-hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .overview-model-badge {
+    width: 100%;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    text-align: left;
+    padding: 16px 20px;
+  }
+  .overview-model-badge .auc-val {
+    font-size: 1.6rem;
+  }
+  .story-hero-full {
+    grid-template-columns: 1fr;
+  }
+  .roles-row {
+    grid-template-columns: 1fr;
+  }
+  .chapter-body {
+    grid-template-columns: 1fr;
+  }
+  .phase-grid {
+    grid-template-columns: 1fr;
+  }
+  .findings-2x2 {
+    grid-template-columns: 1fr;
+  }
+  .findings-grid {
+    grid-template-columns: 1fr;
+  }
+  .shap-section-grid {
+    grid-template-columns: 1fr;
+  }
+  .treemap-grid {
+    grid-template-columns: 1fr 1fr;
+    height: auto;
+  }
+  .treemap-cell.big {
+    grid-column: span 2;
+  }
+}
+
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {
+
+  /* Sidebar → bottom nav on mobile */
+  .sidebar {
+    width: 100%;
+    height: auto;
+    min-height: unset;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .sidebar-brand {
+    display: none;
+  }
+
+  .sidebar-footer {
+    display: none;
+  }
+
+  .nav-section-label {
+    display: none;
+  }
+
+  .nav-spacer {
+    display: none;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0;
+    overflow-x: auto;
+  }
+
+  .nav-item {
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 12px;
+    font-size: 0.6rem;
+    white-space: nowrap;
+    border-left: none;
+    border-top: 2px solid transparent;
+    flex-shrink: 0;
+  }
+
+  .nav-item.active {
+    border-left: none;
+    border-top-color: var(--blue);
+    background: var(--blue-glow);
+  }
+
+  .nav-item .nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Main shifts up, not left */
+  .main {
+    margin-left: 0;
+    padding-bottom: 70px;
+  }
+
+  /* Page padding */
+  .page {
+    padding: 24px 20px;
+  }
+
+  /* KPI grid */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .kpi-card .kpi-value {
+    font-size: 1.3rem;
+  }
+
+  /* Page headers */
+  .page-header h1 {
+    font-size: 1.6rem;
+  }
+
+  /* All 2-col grids → 1 col */
+  .grid-2,
+  .grid-3,
+  .grid-2-1,
+  .grid-1-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Overview hero */
+  .overview-hero {
+    padding: 24px 20px;
+    grid-template-columns: 1fr;
+  }
+  .overview-hero h2 {
+    font-size: 1.2rem;
+  }
+  .overview-model-badge {
+    width: 100%;
+  }
+
+  /* Cards */
+  .card {
+    padding: 16px;
+  }
+
+  /* Insight callouts */
+  .insight-callout {
+    padding: 14px 16px;
+  }
+
+  /* Treemap */
+  .treemap-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .treemap-cell.big {
+    grid-column: span 1;
+  }
+  .treemap-cell {
+    min-height: 80px;
+  }
+
+  /* Signal bars */
+  .signal-row {
+    grid-template-columns: 70px 1fr 40px;
+    gap: 8px;
+  }
+
+  /* Predict form */
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-section-label {
+    grid-column: span 1;
+  }
+  .btn-predict {
+    grid-column: span 1;
+  }
+
+  /* Gauge */
+  .gauge-svg-wrap {
+    width: 160px;
+  }
+
+  /* Story page sections */
+  .story-hero-full {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .story-hero-h1 {
+    font-size: 1.8rem;
+  }
+  .roles-row {
+    grid-template-columns: 1fr;
+  }
+  .chapter {
+    padding: 20px;
+  }
+  .chapter-body {
+    grid-template-columns: 1fr;
+  }
+  .chapter-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chapter-num {
+    font-size: 2.5rem;
+    min-width: unset;
+  }
+  .phase-grid {
+    grid-template-columns: 1fr;
+  }
+  .findings-2x2 {
+    grid-template-columns: 1fr;
+  }
+  .roles-grid {
+    grid-template-columns: 1fr;
+  }
+  .tech-pipeline {
+    padding: 16px;
+  }
+  .pipeline-flow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pipeline-arrow {
+    transform: rotate(90deg);
+    padding: 4px 0;
+  }
+  .stat-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .story-meta {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .story-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .sf-right {
+    flex-wrap: wrap;
+  }
+  .schema-visual {
+    width: 180px;
+    height: 180px;
+  }
+  .findings-grid {
+    grid-template-columns: 1fr;
+  }
+  .finding-card {
+    flex-direction: column;
+  }
+
+  /* Pipeline scroll */
+  .pipeline-scroll-wrap {
+    overflow-x: auto;
+  }
+
+  /* Tables */
+  #seg-action-table table {
+    font-size: 0.72rem;
+  }
+  #seg-action-table th,
+  #seg-action-table td {
+    padding: 7px 8px;
+  }
+
+  /* SVG charts — let them scroll */
+  .chart-wrap {
+    overflow-x: auto;
+    display: block;
+  }
+}
+
+/* ── Small mobile (≤480px) ── */
+@media (max-width: 480px) {
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .kpi-card {
+    padding: 14px 14px;
+  }
+  .kpi-card .kpi-value {
+    font-size: 1.1rem;
+  }
+  .page {
+    padding: 20px 16px;
+  }
+  .page-header h1 {
+    font-size: 1.4rem;
+  }
+  .overview-hero h2 {
+    font-size: 1.1rem;
+  }
+  .signal-row {
+    grid-template-columns: 60px 1fr 36px;
+    gap: 6px;
+  }
+  .signal-label {
+    font-size: 0.65rem;
+  }
+  .nav-item {
+    padding: 8px 10px;
+    font-size: 0.56rem;
+  }
+}
+</style>
+</head>
+<!-- ═══ TOOLTIP ═══ -->
+<div class="tooltip" id="tooltip"></div>
+
+<!-- ═══ PAGE LOADER ═══ -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader-ring"></div>
+  <div class="loader-text" id="loaderText">Loading data...</div>
+</div>
+
+<div class="layout">
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="wordmark">Retail<span>IQ</span></div>
+    <div class="tagline">Customer Intelligence Platform</div>
+  </div>
+
+  <div class="nav-section-label">Analytics</div>
+
+  <a class="nav-item active" data-page="overview" onclick="navigate('overview',this)">
+    <span class="nav-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity=".7"/>
+        <rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/>
+        <rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor" opacity=".7"/>
+      </svg>
+    </span>
+    Overview
+  </a>
+
+  <a class="nav-item" data-page="revenue" onclick="navigate('revenue',this)">
+    <span class="nav-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <polyline points="1,12 5,7 8,9 12,4 15,6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="12,4 15,4 15,7" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    Revenue
+  </a>
+
+  <a class="nav-item" data-page="segments" onclick="navigate('segments',this)">
+    <span class="nav-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M8 1.5 A6.5 6.5 0 0 1 14.5 8 L8 8 Z" fill="currentColor" opacity=".5"/>
+        <path d="M8 8 L14.5 8 A6.5 6.5 0 0 1 4 13.6 Z" fill="currentColor" opacity=".3"/>
+      </svg>
+    </span>
+    Segments
+  </a>
+
+  <a class="nav-item" data-page="delivery" onclick="navigate('delivery',this)">
+    <span class="nav-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="5" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M11 7h2.5l1.5 2v4h-4V7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="4" cy="13.5" r="1.2" fill="currentColor"/>
+        <circle cx="12" cy="13.5" r="1.2" fill="currentColor"/>
+      </svg>
+    </span>
+    Delivery
+  </a>
+
+  <div class="nav-spacer"></div>
+  <div class="nav-section-label">ML Model</div>
+
+  <a class="nav-item" data-page="predict" onclick="navigate('predict',this)">
+    <span class="nav-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M8 4v4l3 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </span>
+    Churn Predictor
+  </a>
+
+  <div class="nav-spacer"></div>
+  <div class="nav-section-label">About</div>
+
+<a class="nav-item" href="story.html" target="_blank" style="text-decoration:none">
+  <span class="nav-icon">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M2 3h12M2 7h8M2 11h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </span>
+  The Story
+</a>
+
+  <div class="sidebar-footer">
+    <div class="built-by">
+      <strong>Yuvraj</strong>
+      Data Scientist | Data Analyst <br>
+      | Data Engineer | AI-ML Engineer
+    </div>
+    <div class="live-dot" id="liveStatus">DB Connected</div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ── PAGE: OVERVIEW ── -->
+  <div class="page active" id="page-overview">
+    <div class="page-header">
+      <div class="eyebrow">Customer Intelligence Platform</div>
+      <h1>Overview</h1>
+      <p>100,000+ real Brazilian e-commerce orders. One platform. Every insight.</p>
+    </div>
+
+    <!-- KPI row -->
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card"><div class="accent-bar" style="background:var(--blue)"></div><div class="kpi-label">Total Revenue</div><div class="kpi-value text-blue" id="kpi-revenue">—</div><div class="kpi-sub">delivered orders</div></div>
+      <div class="kpi-card"><div class="accent-bar" style="background:var(--purple)"></div><div class="kpi-label">Orders</div><div class="kpi-value text-purple" id="kpi-orders">—</div><div class="kpi-sub">successfully delivered</div></div>
+      <div class="kpi-card"><div class="accent-bar" style="background:var(--green)"></div><div class="kpi-label">Customers</div><div class="kpi-value text-green" id="kpi-customers">—</div><div class="kpi-sub">unique buyers</div></div>
+      <div class="kpi-card"><div class="accent-bar" style="background:var(--amber)"></div><div class="kpi-label">Avg Order Value</div><div class="kpi-value text-amber" id="kpi-aov">—</div><div class="kpi-sub">per order (BRL)</div></div>
+      <div class="kpi-card"><div class="accent-bar" style="background:var(--green)"></div><div class="kpi-label">Avg Rating</div><div class="kpi-value text-green" id="kpi-rating">—</div><div class="kpi-sub">out of 5.0</div></div>
+      <div class="kpi-card"><div class="accent-bar" style="background:var(--red)"></div><div class="kpi-label">Late Deliveries</div><div class="kpi-value text-red" id="kpi-late">—</div><div class="kpi-sub">after promised date</div></div>
+    </div>
+
+    <div class="overview-hero mb-20">
+      <div>
+        <h2>93% of customers <em>never return</em> after their first order.</h2>
+        <p>That single number defines the retention challenge. This platform was built to understand why — and predict who's at risk before they leave.</p>
+      </div>
+      <div class="overview-model-badge">
+        <div class="auc-val">0.777</div>
+        <div class="auc-label">ROC-AUC</div>
+        <div class="auc-sub">XGBoost · 77K customers<br>CV stable 0.760±0.009</div>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-20">
+      <div class="insight-callout">
+        <div class="ic-icon">🚚</div>
+        <div class="ic-text"><strong>Delivery is the #1 churn driver.</strong> Even a single day of late delivery drops average rating from 4.3 to 2.6. The first order experience determines everything.</div>
+      </div>
+      <div class="insight-callout">
+        <div class="ic-icon">💸</div>
+        <div class="ic-text"><strong>Freight cost is the top ML predictor.</strong> SHAP analysis shows hidden shipping costs create "surprise shock" — the strongest signal that a customer won't come back.</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="insight-callout">
+        <div class="ic-icon">👑</div>
+        <div class="ic-text"><strong>Champions have 10× the LTV of Lost customers.</strong> RFM segmentation identifies 15,526 high-value customers who deserve a fundamentally different retention strategy.</div>
+      </div>
+      <div class="insight-callout">
+        <div class="ic-icon">💄</div>
+        <div class="ic-text"><strong>health_beauty leads revenue at R$1.26M.</strong> It's the star category — high volume, high satisfaction. The template for what other categories should aspire to.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: REVENUE ── -->
+  <div class="page" id="page-revenue">
+    <div class="page-header">
+      <div class="eyebrow">Data Analyst Layer</div>
+      <h1>Revenue Intelligence</h1>
+      <p>Monthly trends, growth rate, and order dynamics across 24 months of real data.</p>
+    </div>
+    <div class="card mb-20">
+      <div class="chart-title">Gross Revenue by Month <span style="font-weight:400;color:var(--muted);font-size:0.75rem;margin-left:8px;">delivered orders · BRL</span></div>
+      <svg id="revenue-chart" class="chart-wrap" height="260"></svg>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Monthly Revenue</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Peak Month</div>
+      </div>
+    </div>
+    <div class="grid-2 mb-20">
+      <div class="card">
+        <div class="chart-title">Month-over-Month Growth</div>
+        <svg id="growth-chart" class="chart-wrap" height="200"></svg>
+      </div>
+      <div class="card">
+        <div class="chart-title">Orders vs Unique Customers</div>
+        <svg id="volume-chart" class="chart-wrap" height="200"></svg>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Orders</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Customers</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="chart-title">Avg Order Value vs Customer Rating <span style="font-weight:400;color:var(--muted);font-size:0.75rem;margin-left:8px;">dual axis</span></div>
+      <svg id="aov-chart" class="chart-wrap" height="200"></svg>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Avg Order Value (BRL)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Avg Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: SEGMENTS ── -->
+  <div class="page" id="page-segments">
+    <div class="page-header">
+      <div class="eyebrow">Data Analyst Layer · RFM Framework</div>
+      <h1>Customer Segments</h1>
+      <p>Recency · Frequency · Monetary segmentation across 96,478 customers.</p>
+    </div>
+    <div class="grid-2-1 mb-20">
+      <div class="card">
+        <div class="chart-title">Segment Map</div>
+        <div class="chart-subtitle">Size reflects customer count · Hover for details</div>
+        <div class="treemap-grid" id="treemap-grid">
+          <div class="empty-state" style="grid-column:span 3">Loading segments...</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chart-title">Segment Breakdown</div>
+        <svg id="seg-bar-chart" class="chart-wrap" height="320"></svg>
+      </div>
+    </div>
+    <div class="card">
+      <div class="chart-title">What each segment means — and what to do</div>
+      <div id="seg-action-table"></div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: DELIVERY ── -->
+  <div class="page" id="page-delivery">
+    <div class="page-header">
+      <div class="eyebrow">Data Analyst Layer · Business Insight</div>
+      <h1>Delivery Impact</h1>
+      <p>How delivery performance drives satisfaction — and why it's the single biggest churn lever.</p>
+    </div>
+    <div class="grid-2 mb-20">
+      <div class="card">
+        <div class="chart-title">Rating Drop by Delivery Delay</div>
+        <div class="chart-subtitle">On-time delivery = 4.3 avg rating. One day late = 2.6.</div>
+        <div class="signal-bars-wrap" id="signal-bars" style="margin-top:8px;">
+          <div class="empty-state">Loading...</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chart-title">Order Volume by Delivery Status</div>
+        <svg id="delivery-vol-chart" class="chart-wrap" height="280"></svg>
+      </div>
+    </div>
+    <div class="card mb-20">
+      <div class="chart-title">Top 15 Product Categories by Revenue</div>
+      <svg id="category-chart" class="chart-wrap" height="340"></svg>
+    </div>
+    <div class="grid-2">
+      <div class="insight-callout">
+        <div class="ic-icon">⚡</div>
+        <div class="ic-text"><strong>The 1-day rule.</strong> Even a single day beyond the promised date collapses average rating by 1.7 points. Customers notice immediately.</div>
+      </div>
+      <div class="insight-callout">
+        <div class="ic-icon">📦</div>
+        <div class="ic-text"><strong>Bulky categories carry more risk.</strong> bed_bath_table and furniture_decor show higher late-delivery rates — logistics complexity maps directly to churn.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: PREDICT ── -->
+  <div class="page" id="page-predict">
+    <div class="page-header">
+      <div class="eyebrow">Data Scientist Layer · XGBoost · AUC 0.777</div>
+      <h1>Churn Predictor</h1>
+      <p>Enter a customer's first-order details. The model predicts whether they'll ever return.</p>
+    </div>
+    <div class="predict-layout">
+      <div class="card">
+        <div class="form-grid" id="predict-form">
+
+          <div class="form-section-label" style="border-top:none;padding-top:0;margin-top:0;">Order Value</div>
+
+          <div class="form-group">
+            <label>Order Value (BRL)</label>
+            <input type="number" id="f-order-value" value="189.90" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label>Freight Value (BRL)</label>
+            <input type="number" id="f-freight-value" value="18.50" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label>Item Count</label>
+            <input type="number" id="f-item-count" value="2" min="1">
+          </div>
+          <div class="form-group">
+            <label>Avg Item Price (BRL)</label>
+            <input type="number" id="f-avg-item-price" value="94.95" step="0.01" min="0">
+          </div>
+
+          <div class="form-section-label">Delivery</div>
+
+          <div class="form-group">
+            <label>Actual Delivery Days</label>
+            <input type="number" id="f-actual-days" value="8" step="0.5" min="0">
+          </div>
+          <div class="form-group">
+            <label>Promised Delivery Days</label>
+            <input type="number" id="f-promised-days" value="12" step="0.5" min="1">
+          </div>
+          <div class="form-group">
+            <label>Delay Hours (0 if on time)</label>
+            <input type="number" id="f-delay-hours" value="0" step="1" min="0">
+          </div>
+          <div class="form-group">
+            <label>Delivered On Time?</label>
+            <select id="f-on-time">
+              <option value="1">Yes — on time</option>
+              <option value="0">No — late</option>
+            </select>
+          </div>
+
+          <div class="form-section-label">Satisfaction</div>
+
+          <div class="form-group">
+            <label>Review Score (1–5)</label>
+            <select id="f-review-score">
+              <option value="5">⭐⭐⭐⭐⭐  5 — Excellent</option>
+              <option value="4">⭐⭐⭐⭐  4 — Good</option>
+              <option value="3">⭐⭐⭐  3 — Average</option>
+              <option value="2">⭐⭐  2 — Poor</option>
+              <option value="1">⭐  1 — Terrible</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Payment Type</label>
+            <select id="f-payment-type">
+              <option value="credit_card">Credit Card</option>
+              <option value="boleto">Boleto</option>
+              <option value="voucher">Voucher</option>
+              <option value="debit_card">Debit Card</option>
+            </select>
+          </div>
+
+          <div class="form-section-label">Product & Context</div>
+
+          <div class="form-group">
+            <label>Installments</label>
+            <input type="number" id="f-installments" value="3" min="1">
+          </div>
+          <div class="form-group">
+            <label>Product Category</label>
+            <select id="f-category">
+              <option value="health_beauty">health_beauty</option>
+              <option value="bed_bath_table">bed_bath_table</option>
+              <option value="sports_leisure">sports_leisure</option>
+              <option value="furniture_decor">furniture_decor</option>
+              <option value="computers_accessories">computers_accessories</option>
+              <option value="housewares">housewares</option>
+              <option value="watches_gifts">watches_gifts</option>
+              <option value="telephony">telephony</option>
+              <option value="auto">auto</option>
+              <option value="toys">toys</option>
+              <option value="cool_stuff">cool_stuff</option>
+              <option value="garden_tools">garden_tools</option>
+              <option value="baby">baby</option>
+              <option value="electronics">electronics</option>
+              <option value="other">other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Product Weight (g)</label>
+            <input type="number" id="f-weight" value="400" min="0">
+          </div>
+          <div class="form-group">
+            <label>Customer State</label>
+            <select id="f-state">
+              <option value="SP">SP — São Paulo</option>
+              <option value="RJ">RJ — Rio de Janeiro</option>
+              <option value="MG">MG — Minas Gerais</option>
+              <option value="RS">RS — Rio Grande do Sul</option>
+              <option value="PR">PR — Paraná</option>
+              <option value="SC">SC — Santa Catarina</option>
+              <option value="BA">BA — Bahia</option>
+              <option value="GO">GO — Goiás</option>
+              <option value="ES">ES — Espírito Santo</option>
+              <option value="PE">PE — Pernambuco</option>
+              <option value="other">Other state</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Purchase Month</label>
+            <select id="f-month">
+              <option value="1">January</option><option value="2">February</option>
+              <option value="3">March</option><option value="4">April</option>
+              <option value="5">May</option><option value="6">June</option>
+              <option value="7">July</option><option value="8">August</option>
+              <option value="9">September</option><option value="10">October</option>
+              <option value="11" selected>November</option><option value="12">December</option>
+            </select>
+          </div>
+
+          <button class="btn-predict" id="btn-predict" onclick="runPrediction()">
+            Predict Churn Risk
+          </button>
+        </div>
+      </div>
+
+      <!-- Gauge panel -->
+      <div class="gauge-wrap">
+        <div class="gauge-card" id="gauge-card">
+          <div class="gauge-placeholder">
+            <div class="ph-icon">🔮</div>
+            Fill in order details and click<br>Predict to see the risk assessment.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: STORY ── -->
+<div class="page" id="page-story">
+
+  <!-- ══ HERO ══ -->
+  <div class="story-hero-full">
+    <div class="story-hero-left">
+      <div class="story-eyebrow">Built by Yuvraj · 2024</div>
+      <h1 class="story-hero-h1">One question<br>drove <em>everything.</em></h1>
+      <p class="story-hero-p">Why do 93% of e-commerce customers never come back after their first order? I spent weeks inside 100,000 real transactions to find out — and built this platform to prove it with data.</p>
+      <div class="story-hero-tags">
+        <span class="stag">PostgreSQL</span>
+        <span class="stag">XGBoost</span>
+        <span class="stag">FastAPI</span>
+        <span class="stag">SHAP</span>
+        <span class="stag">Python</span>
+        <span class="stag">SQL</span>
+      </div>
+    </div>
+    <div class="story-hero-right">
+      <div class="story-stat-cluster">
+        <div class="stat-big">
+          <div class="stat-val text-blue" id="s-orders">0</div>
+          <div class="stat-label">real orders analysed</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-small">
+            <div class="stat-val-sm text-green">0.777</div>
+            <div class="stat-label-sm">ROC-AUC</div>
+          </div>
+          <div class="stat-small">
+            <div class="stat-val-sm text-amber">9</div>
+            <div class="stat-label-sm">DB tables joined</div>
+          </div>
+          <div class="stat-small">
+            <div class="stat-val-sm text-purple">62</div>
+            <div class="stat-label-sm">ML features</div>
+          </div>
+        </div>
+        <div class="stat-insight-card">
+          <div class="sic-num text-red">93%</div>
+          <div class="sic-text">of customers never placed a second order.<br><span style="color:var(--muted)">That number started this entire project.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ROLES ══ -->
+  <div class="section-label-row">
+    <div class="section-divider-line"></div>
+    <span class="section-divider-text">Three roles. One project.</span>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <div class="roles-row">
+    <div class="role-pill" style="--rc:var(--blue)">
+      <div class="role-pill-icon">🏗️</div>
+      <div class="role-pill-title">Data Engineer</div>
+      <ul class="role-pill-list">
+        <li>9-table PostgreSQL schema</li>
+        <li>Automated ingestion pipeline</li>
+        <li>3 analytics views · medallion arch</li>
+        <li>FastAPI — 9 REST endpoints</li>
+      </ul>
+    </div>
+    <div class="role-pill" style="--rc:var(--purple)">
+      <div class="role-pill-icon">📊</div>
+      <div class="role-pill-title">Data Analyst</div>
+      <ul class="role-pill-list">
+        <li>5 production SQL queries</li>
+        <li>RFM — 96,478 customers</li>
+        <li>Delivery vs satisfaction analysis</li>
+        <li>Product health scoring</li>
+      </ul>
+    </div>
+    <div class="role-pill" style="--rc:var(--green)">
+      <div class="role-pill-icon">🤖</div>
+      <div class="role-pill-title">Data Scientist</div>
+      <ul class="role-pill-list">
+        <li>Detected + fixed target leakage</li>
+        <li>XGBoost · AUC 0.777</li>
+        <li>RandomizedSearchCV · 30 iters</li>
+        <li>SHAP explainability</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══ CHAPTER 1 ══ -->
+  <div class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-num">01</div>
+      <div class="chapter-meta">
+        <div class="chapter-role-badge" style="background:var(--blue-glow);color:var(--blue)">Data Engineer</div>
+        <div class="chapter-title">The Foundation</div>
+        <div class="chapter-sub">Schema design · ingestion pipeline · medallion architecture</div>
+      </div>
+    </div>
+    <div class="chapter-body">
+      <div class="chapter-text">
+        <p>Most students dump CSVs into pandas and call it a project. I started by designing a <strong>9-table relational schema</strong> in PostgreSQL — because that's what production looks like.</p>
+        <p>Two schemas: <code>raw</code> for data exactly as it arrived, <code>analytics</code> for business-ready views. This is the <strong>medallion architecture</strong> pattern used in real data lakes.</p>
+        <div class="chapter-callout" style="border-color:var(--blue)">
+          <strong style="color:var(--blue)">Engineering decision</strong>
+          Used <code>if_exists='replace'</code> with proper indexes — not just CSV load. Batch inserts with <code>method='multi'</code> cut load time by 60%.
+        </div>
+      </div>
+      <div class="chapter-visual">
+        <div class="schema-visual">
+          <div class="schema-center">raw.orders<br><span style="font-size:0.65rem;color:var(--muted)">99,441 rows</span></div>
+          <div class="schema-satellites">
+            <div class="schema-sat" style="--sa:0deg">customers</div>
+            <div class="schema-sat" style="--sa:60deg">order_items</div>
+            <div class="schema-sat" style="--sa:120deg">reviews</div>
+            <div class="schema-sat" style="--sa:180deg">payments</div>
+            <div class="schema-sat" style="--sa:240deg">sellers</div>
+            <div class="schema-sat" style="--sa:300deg">products</div>
+          </div>
+        </div>
+        <div class="schema-legend">9 tables · proper FK constraints · 7 indexes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHAPTER 2 ══ -->
+  <div class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-num">02</div>
+      <div class="chapter-meta">
+        <div class="chapter-role-badge" style="background:var(--purple-glow);color:var(--purple)">Data Analyst</div>
+        <div class="chapter-title">The Insights</div>
+        <div class="chapter-sub">5 SQL queries · window functions · RFM framework</div>
+      </div>
+    </div>
+    <div class="chapter-body">
+      <div class="chapter-text">
+        <p>Five production-grade SQL queries, each answering a real business question that an e-commerce company would actually pay to know.</p>
+        <p>The finding that changed everything came from Query 03 — delivery performance vs customer satisfaction.</p>
+        <div class="chapter-callout" style="border-color:var(--red)">
+          <strong style="color:var(--red)">The insight that drove the ML model</strong>
+          1 day of late delivery drops avg rating from 4.29 → 2.6. Not a trend — a cliff edge. Every late order is a lost customer.
+        </div>
+      </div>
+      <div class="chapter-visual">
+        <div class="delivery-drop-visual">
+          <div class="ddv-label">Delivery delay → Rating impact</div>
+          <div class="ddv-bars">
+            <div class="ddv-row">
+              <span class="ddv-bucket">On Time</span>
+              <div class="ddv-track"><div class="ddv-fill" style="width:85.8%;background:var(--green)"></div></div>
+              <span class="ddv-val text-green">4.29</span>
+            </div>
+            <div class="ddv-row">
+              <span class="ddv-bucket">0-1 day</span>
+              <div class="ddv-track"><div class="ddv-fill" style="width:52%;background:var(--amber)"></div></div>
+              <span class="ddv-val text-amber">2.60</span>
+            </div>
+            <div class="ddv-row">
+              <span class="ddv-bucket">1-3 days</span>
+              <div class="ddv-track"><div class="ddv-fill" style="width:42%;background:var(--orange,#fb923c)"></div></div>
+              <span class="ddv-val" style="color:#fb923c">2.10</span>
+            </div>
+            <div class="ddv-row">
+              <span class="ddv-bucket">3-7 days</span>
+              <div class="ddv-track"><div class="ddv-fill" style="width:34.6%;background:var(--red)"></div></div>
+              <span class="ddv-val text-red">1.73</span>
+            </div>
+          </div>
+          <div class="ddv-note">Source: 99,441 real delivered orders · PostgreSQL query</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHAPTER 3 ══ -->
+  <div class="chapter chapter-dark">
+    <div class="chapter-header">
+      <div class="chapter-num" style="color:var(--red)">03</div>
+      <div class="chapter-meta">
+        <div class="chapter-role-badge" style="background:var(--red-glow);color:var(--red)">Data Scientist · The Mistake</div>
+        <div class="chapter-title">99.9% Precision.<br>Something was wrong.</div>
+        <div class="chapter-sub">Target leakage · wrong frame · rebuild</div>
+      </div>
+    </div>
+    <div class="chapter-body">
+      <div class="chapter-text">
+        <p>The first model returned <strong style="color:var(--red)">99.9% precision</strong>. Any data scientist should immediately suspect something is wrong — and it was.</p>
+        <p>I had made a classic mistake: <strong>target leakage</strong>. <code>recency_days</code> was both defining the label (recency > 180 = churned) AND used as a model feature. The model wasn't learning — it was memorising a rule.</p>
+        <div class="chapter-callout" style="border-color:var(--red)">
+          <strong style="color:var(--red)">The bug</strong>
+          CV AUC was 0.56 — barely above random guessing. That's the real tell. High train accuracy + low CV = leakage, not learning.
+        </div>
+      </div>
+      <div class="chapter-visual">
+        <div class="leakage-visual">
+          <div class="lv-title">What leakage looks like</div>
+          <div class="lv-box lv-bad">
+            <div class="lv-box-label" style="color:var(--red)">❌ Version 1 — Leaked</div>
+            <div class="lv-metric">Train AUC <span style="color:var(--red)">0.99</span></div>
+            <div class="lv-metric">CV AUC <span style="color:var(--red)">0.56</span></div>
+            <div class="lv-metric">Precision <span style="color:var(--red)">99.9%</span></div>
+            <div class="lv-feature">Feature: recency_days ← Label source ⚠️</div>
+          </div>
+          <div class="lv-arrow">↓ rebuilt</div>
+          <div class="lv-box lv-good">
+            <div class="lv-box-label" style="color:var(--green)">✅ Version 2 — Clean</div>
+            <div class="lv-metric">Train AUC <span style="color:var(--amber)">0.869</span></div>
+            <div class="lv-metric">CV AUC <span style="color:var(--green)">0.760 ± 0.009</span></div>
+            <div class="lv-metric">Test AUC <span style="color:var(--green)">0.777</span></div>
+            <div class="lv-feature">recency_days removed · first-order frame only</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHAPTER 4 ══ -->
+  <div class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-num">04</div>
+      <div class="chapter-meta">
+        <div class="chapter-role-badge" style="background:var(--green-glow);color:var(--green)">Data Scientist · Fixed</div>
+        <div class="chapter-title">The Real Model</div>
+        <div class="chapter-sub">Leakage-free frame · SHAP · freight as #1 predictor</div>
+      </div>
+    </div>
+    <div class="chapter-body">
+      <div class="chapter-text">
+        <p>New frame: given only a customer's <strong>first-order signals</strong>, predict whether they'll ever place a second order. Recency and frequency completely excluded.</p>
+        <p>RandomizedSearchCV with 30 iterations. 5-fold stratified CV. SHAP explainability on 2,000 test samples.</p>
+        <div class="chapter-callout" style="border-color:var(--green)">
+          <strong style="color:var(--green)">What SHAP revealed</strong>
+          freight_value is the #1 churn predictor — not delivery speed, not review score. Customers who pay high freight relative to order value never come back. Surprise cost = silent churn.
+        </div>
+      </div>
+      <div class="chapter-visual">
+        <div class="shap-visual">
+          <div class="shap-title">Top churn predictors (SHAP — your model)</div>
+          <div class="shap-bars">
+            <div class="shap-row"><span class="shap-feat">freight_value</span><div class="shap-track"><div class="shap-fill" style="width:100%;background:var(--red)"></div></div><span class="shap-val">0.196</span></div>
+            <div class="shap-row"><span class="shap-feat">installments</span><div class="shap-track"><div class="shap-fill" style="width:87%;background:var(--amber)"></div></div><span class="shap-val">0.171</span></div>
+            <div class="shap-row"><span class="shap-feat">avg_item_price</span><div class="shap-track"><div class="shap-fill" style="width:77%;background:var(--amber)"></div></div><span class="shap-val">0.150</span></div>
+            <div class="shap-row"><span class="shap-feat">promised_days</span><div class="shap-track"><div class="shap-fill" style="width:68%;background:var(--blue)"></div></div><span class="shap-val">0.134</span></div>
+            <div class="shap-row"><span class="shap-feat">actual_days</span><div class="shap-track"><div class="shap-fill" style="width:55%;background:var(--blue)"></div></div><span class="shap-val">0.108</span></div>
+            <div class="shap-row"><span class="shap-feat">review_score</span><div class="shap-track"><div class="shap-fill" style="width:48%;background:var(--purple)"></div></div><span class="shap-val">0.094</span></div>
+          </div>
+          <div class="shap-note">From your ml/models/churn_model.pkl · XGBoost · 62 features · 77K customers</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PIPELINE ══ -->
+  <div class="section-label-row" style="margin-top:20px">
+    <div class="section-divider-line"></div>
+    <span class="section-divider-text">End-to-end pipeline</span>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <div class="pipeline-scroll-wrap">
+    <div class="pipeline-scroll">
+      <div class="ps-node">
+        <div class="ps-icon">📦</div>
+        <div class="ps-name">Raw CSV</div>
+        <div class="ps-detail">9 files · Kaggle Olist</div>
+      </div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-node">
+        <div class="ps-icon">🐍</div>
+        <div class="ps-name">Ingestion</div>
+        <div class="ps-detail">Python · SQLAlchemy · batch inserts</div>
+      </div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-node ps-highlight">
+        <div class="ps-icon">🗄️</div>
+        <div class="ps-name">PostgreSQL</div>
+        <div class="ps-detail">raw + analytics schemas</div>
+      </div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-node">
+        <div class="ps-icon">📐</div>
+        <div class="ps-name">SQL Layer</div>
+        <div class="ps-detail">5 queries · CTEs · window fns</div>
+      </div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-node">
+        <div class="ps-icon">🧮</div>
+        <div class="ps-name">Feature Eng.</div>
+        <div class="ps-detail">Pandas · 62 leakage-free features</div>
+      </div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-node ps-highlight">
+        <div class="ps-icon">🤖</div>
+        <div class="ps-name">XGBoost</div>
+        <div class="ps-detail">AUC 0.777 · SHAP explainability</div>
+      </div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-node">
+        <div class="ps-icon">⚡</div>
+        <div class="ps-name">FastAPI</div>
+        <div class="ps-detail">9 endpoints · live DB + model</div>
+      </div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-node ps-highlight">
+        <div class="ps-icon">🖥️</div>
+        <div class="ps-name">Dashboard</div>
+        <div class="ps-detail">Pure HTML · zero framework</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOUR FINDINGS ══ -->
+  <div class="section-label-row" style="margin-top:20px">
+    <div class="section-divider-line"></div>
+    <span class="section-divider-text">Four findings that matter</span>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <div class="findings-2x2">
+    <div class="finding-big" style="--fc:var(--red)">
+      <div class="fb-num">01</div>
+      <div class="fb-content">
+        <div class="fb-stat">4.29 → 1.73</div>
+        <div class="fb-title">Delivery SLA is the retention lever</div>
+        <div class="fb-body">Late 7+ day delivery destroys avg rating. Tighten SLA on bulky categories. No discount required.</div>
+      </div>
+    </div>
+    <div class="finding-big" style="--fc:var(--blue)">
+      <div class="fb-num">02</div>
+      <div class="fb-content">
+        <div class="fb-stat">SHAP #1</div>
+        <div class="fb-title">Freight cost predicts churn better than satisfaction score</div>
+        <div class="fb-body">Surprise shipping cost = silent churn. Free shipping above R$150 threshold would directly address this.</div>
+      </div>
+    </div>
+    <div class="finding-big" style="--fc:var(--green)">
+      <div class="fb-num">03</div>
+      <div class="fb-content">
+        <div class="fb-stat">10× LTV</div>
+        <div class="fb-title">Champions are worth protecting at any cost</div>
+        <div class="fb-body">R$318 avg LTV vs R$32 for Lost segment. A referral programme targeting Champions compounds growth.</div>
+      </div>
+    </div>
+    <div class="finding-big" style="--fc:var(--amber)">
+      <div class="fb-num">04</div>
+      <div class="fb-content">
+        <div class="fb-stat">R$1.24M</div>
+        <div class="fb-title">health_beauty is the benchmark category</div>
+        <div class="fb-body">Highest revenue, high satisfaction, manageable logistics. Every other category should study it.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="story-footer">
+    <div class="sf-left">
+      <div class="sf-name">Yuvraj</div>
+      <div class="sf-sub">BCA Honours in Data Science · Jagran Lakecity University · CGPA 8.9</div>
+    </div>
+    <div class="sf-right">
+      <a href="https://github.com/YUVRAJ-NOVA" target="_blank" class="sf-link">GitHub</a>
+      <span class="sf-sep">·</span>
+      <span class="sf-link">Oracle Cloud AI — 96% &amp; 98%</span>
+      <span class="sf-sep">·</span>
+      <span class="sf-link">Global Hackathon Finalist · Outlier.ai</span>
+    </div>
+  </div>
+
+</div>
+
+</main>
+</div><!-- end .layout -->
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG — points to your real FastAPI
+// ═══════════════════════════════════════════════
+const API = 'http://localhost:8000';
+
+// ═══════════════════════════════════════════════
+// STATE — all real data from your DB + model
+// ═══════════════════════════════════════════════
+const state = {
+  summary:    null,
+  revenue:    null,
+  segments:   null,
+  delivery:   null,
+  categories: null,
+};
+
+// ═══════════════════════════════════════════════
+// LOADER
+// ═══════════════════════════════════════════════
+function showLoader(msg = 'Loading data...') {
+  document.getElementById('loaderText').textContent = msg;
+  document.getElementById('pageLoader').classList.add('visible');
+}
+function hideLoader() {
+  document.getElementById('pageLoader').classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════
+// TOOLTIP
+// ═══════════════════════════════════════════════
+const tip = document.getElementById('tooltip');
+function showTip(e, html) {
+  tip.innerHTML = html;
+  tip.classList.add('visible');
+  moveTip(e);
+}
+function moveTip(e) {
+  const x = e.clientX + 14;
+  const y = e.clientY - 10;
+  tip.style.left = Math.min(x, window.innerWidth - 220) + 'px';
+  tip.style.top  = y + 'px';
+}
+function hideTip() { tip.classList.remove('visible'); }
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+const loaderMessages = {
+  overview: 'Fetching live KPIs from PostgreSQL...',
+  revenue:  'Querying monthly revenue from analytics view...',
+  segments: 'Running RFM segmentation query...',
+  delivery: 'Analysing delivery performance data...',
+  predict:  'Loading XGBoost model endpoints...',
+  story:    'Preparing project story...',
+};
+
+async function navigate(page, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  showLoader(loaderMessages[page] || 'Loading...');
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+  try {
+    await loadPageData(page);
+  } catch(e) {
+    console.error('Data load error:', e);
+  }
+
+  const target = document.getElementById('page-' + page);
+  if (target) {
+    target.classList.add('active');
+    target.style.animation = 'none';
+    target.offsetHeight;
+    target.style.animation = '';
+  }
+
+  // Wait for DOM paint THEN redraw charts with correct width
+  await sleep(60);
+  if (page === 'revenue'  && state.revenue)   renderRevenue(state.revenue);
+  if (page === 'segments' && state.segments)  renderSegments(state.segments);
+  if (page === 'delivery' && state.delivery)  renderDelivery(state.delivery, state.categories);
+
+  hideLoader();
+}
+
+async function loadPageData(page) {
+  switch(page) {
+    case 'overview':
+      if (!state.summary) state.summary = await apiFetch('/insights/summary');
+      renderKPIs(state.summary);
+      break;
+    case 'revenue':
+      if (!state.revenue) state.revenue = await apiFetch('/insights/revenue');
+      renderRevenue(state.revenue);
+      break;
+    case 'segments':
+      if (!state.segments) state.segments = await apiFetch('/insights/segments');
+      renderSegments(state.segments);
+      break;
+    case 'delivery':
+      if (!state.delivery) state.delivery = await apiFetch('/insights/delivery');
+      if (!state.categories) state.categories = await apiFetch('/insights/top-categories');
+      renderDelivery(state.delivery, state.categories);
+      break;
+    case 'predict':
+      // no pre-fetch needed — prediction is on-demand
+      break;
+    case 'story':
+      // static content — no fetch
+      break;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// API FETCH
+// ═══════════════════════════════════════════════
+async function apiFetch(endpoint) {
+  const res = await fetch(API + endpoint);
+  if (!res.ok) throw new Error(`API ${endpoint} → ${res.status}`);
+  return res.json();
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ═══════════════════════════════════════════════
+// FORMAT HELPERS
+// ═══════════════════════════════════════════════
+function fmtRevenue(v) {
+  if (!v && v !== 0) return '—';
+  const n = parseFloat(v);
+  if (n >= 1e6) return 'R$' + (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return 'R$' + (n/1e3).toFixed(1) + 'K';
+  return 'R$' + n.toFixed(0);
+}
+function fmtNum(v) {
+  if (!v && v !== 0) return '—';
+  return parseInt(v).toLocaleString('en-IN');
+}
+function fmtPct(v) {
+  if (!v && v !== 0) return '—';
+  return parseFloat(v).toFixed(1) + '%';
+}
+
+// ═══════════════════════════════════════════════
+// KPI RENDER — real data from /insights/summary
+// ═══════════════════════════════════════════════
+function renderKPIs(d) {
+  if (!d) return;
+  animateCount('kpi-revenue',   d.total_revenue,   fmtRevenue);
+  animateCount('kpi-orders',    d.total_orders,    fmtNum);
+  animateCount('kpi-customers', d.total_customers, fmtNum);
+  animateCount('kpi-aov',       d.avg_order_value, v => 'R$' + parseFloat(v).toFixed(2));
+  animateCount('kpi-rating',    d.avg_rating,      v => '⭐ ' + parseFloat(v).toFixed(2));
+  animateCount('kpi-late',      d.late_delivery_pct, fmtPct);
+}
+
+function animateCount(id, target, fmt) {
+  const el = document.getElementById(id);
+  if (!el || target == null) return;
+  const end   = parseFloat(target);
+  const dur   = 900;
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(end * ease);
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(end);
+  }
+  requestAnimationFrame(step);
+}
+
+// ═══════════════════════════════════════════════
+// REVENUE CHARTS — real data from /insights/revenue
+// ═══════════════════════════════════════════════
+function renderRevenue(data) {
+  if (!data || !data.length) return;
+
+  const W = document.getElementById('revenue-chart').parentElement.clientWidth - 48;
+  const PAD = { top: 20, right: 20, bottom: 50, left: 64 };
+
+  // ── Chart 1: Revenue bars ──
+  drawRevenueBar(data, W, 260, PAD);
+
+  // ── Chart 2: MoM Growth ──
+  drawGrowthBars(data, W, 200, PAD);
+
+  // ── Chart 3: Volume line ──
+  drawVolumeLines(data, W, 200, PAD);
+
+  // ── Chart 4: AOV + Rating ──
+  drawAovRating(data, W, 200, PAD);
+}
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  return el;
+}
+
+function drawRevenueBar(data, W, H, PAD) {
+  const svg = document.getElementById('revenue-chart');
+  svg.innerHTML = '';
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  const revenues = data.map(d => parseFloat(d.revenue));
+  const maxRev   = Math.max(...revenues);
+  const peakIdx  = revenues.indexOf(maxRev);
+
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top  - PAD.bottom;
+  const bw     = Math.max(6, (innerW / data.length) * 0.7);
+  const gap    = innerW / data.length;
+
+  // Y axis ticks
+  const yticks = 5;
+  for (let i = 0; i <= yticks; i++) {
+    const yv  = (maxRev / yticks) * i;
+    const y   = PAD.top + innerH - (innerH * i / yticks);
+    const line = svgEl('line', { x1: PAD.left, x2: PAD.left + innerW, y1: y, y2: y,
+      stroke: 'rgba(255,255,255,0.05)', 'stroke-width': 1 });
+    svg.appendChild(line);
+    const txt = svgEl('text', { x: PAD.left - 8, y: y + 4,
+      'text-anchor': 'end', class: 'axis-text' });
+    txt.textContent = fmtRevenue(yv);
+    svg.appendChild(txt);
+  }
+
+  // Bars
+  data.forEach((d, i) => {
+    const rev  = parseFloat(d.revenue);
+    const bh   = (rev / maxRev) * innerH;
+    const x    = PAD.left + i * gap + gap / 2 - bw / 2;
+    const y    = PAD.top + innerH - bh;
+    const isPeak = i === peakIdx;
+    const color  = isPeak ? '#fbbf24' : '#4f8ef7';
+
+    // Glow behind peak
+    if (isPeak) {
+      const glow = svgEl('rect', { x: x - 4, y: y - 4, width: bw + 8, height: bh + 4,
+        rx: 6, fill: 'rgba(251,191,36,0.1)', filter: '' });
+      svg.appendChild(glow);
+    }
+
+    const bar = svgEl('rect', { x, y, width: bw, height: bh, rx: 4, fill: color,
+      opacity: isPeak ? 1 : 0.75 });
+    bar.style.cursor = 'pointer';
+    bar.addEventListener('mouseenter', e =>
+      showTip(e, `<strong>${d.month_label}</strong>Revenue: ${fmtRevenue(d.revenue)}<br>Orders: ${fmtNum(d.orders)}<br>AOV: R$${parseFloat(d.aov).toFixed(2)}`));
+    bar.addEventListener('mousemove', moveTip);
+    bar.addEventListener('mouseleave', hideTip);
+    svg.appendChild(bar);
+
+    // Peak label
+    if (isPeak) {
+      const lbl = svgEl('text', { x: x + bw / 2, y: y - 8,
+        'text-anchor': 'middle', fill: '#fbbf24', 'font-size': 10, 'font-weight': 700 });
+      lbl.textContent = '★ PEAK';
+      svg.appendChild(lbl);
+    }
+
+    // X label
+    if (i % 3 === 0 || isPeak) {
+      const parts = d.month_label.split(' ');
+      const tg = svgEl('text', { x: x + bw / 2, y: H - 28,
+        'text-anchor': 'middle', class: 'axis-text' });
+      tg.textContent = parts[0];
+      svg.appendChild(tg);
+      const tg2 = svgEl('text', { x: x + bw / 2, y: H - 14,
+        'text-anchor': 'middle', class: 'axis-text' });
+      tg2.textContent = parts[1];
+      svg.appendChild(tg2);
+    }
+  });
+
+  // X axis line
+  svg.appendChild(svgEl('line', {
+    x1: PAD.left, x2: PAD.left + innerW,
+    y1: PAD.top + innerH, y2: PAD.top + innerH,
+    class: 'axis-line'
+  }));
+}
+
+function drawGrowthBars(data, W, H, PAD) {
+  const svg = document.getElementById('growth-chart');
+  svg.innerHTML = '';
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+
+  const revenues = data.map(d => parseFloat(d.revenue));
+  const growth   = revenues.map((v, i) => i === 0 ? 0 :
+    ((v - revenues[i-1]) / revenues[i-1]) * 100);
+  const absMax   = Math.max(...growth.map(Math.abs), 10);
+
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top  - PAD.bottom;
+  const bw     = Math.max(4, (innerW / data.length) * 0.65);
+  const gap    = innerW / data.length;
+  const zeroY  = PAD.top + innerH / 2;
+
+  // Zero line
+  svg.appendChild(svgEl('line', { x1: PAD.left, x2: PAD.left + innerW,
+    y1: zeroY, y2: zeroY, stroke: 'rgba(255,255,255,0.12)', 'stroke-width': 1 }));
+
+  // Y ticks
+  [-absMax, 0, absMax].forEach(v => {
+    const y = zeroY - (v / absMax) * (innerH / 2);
+    const t = svgEl('text', { x: PAD.left - 8, y: y + 4,
+      'text-anchor': 'end', class: 'axis-text' });
+    t.textContent = v.toFixed(0) + '%';
+    svg.appendChild(t);
+  });
+
+  growth.forEach((g, i) => {
+    if (i === 0) return;
+    const isPos = g >= 0;
+    const bh    = Math.abs(g) / absMax * (innerH / 2);
+    const x     = PAD.left + i * gap + gap / 2 - bw / 2;
+    const y     = isPos ? zeroY - bh : zeroY;
+    const bar   = svgEl('rect', { x, y, width: bw, height: bh, rx: 2,
+      fill: isPos ? '#34d399' : '#f87171', opacity: 0.85 });
+    bar.addEventListener('mouseenter', e =>
+      showTip(e, `<strong>${data[i].month_label}</strong>MoM Growth: ${g > 0 ? '+' : ''}${g.toFixed(1)}%`));
+    bar.addEventListener('mousemove', moveTip);
+    bar.addEventListener('mouseleave', hideTip);
+    svg.appendChild(bar);
+  });
+}
+
+function drawVolumeLines(data, W, H, PAD) {
+  const svg = document.getElementById('volume-chart');
+  svg.innerHTML = '';
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+
+  const orders    = data.map(d => parseFloat(d.orders));
+  const customers = data.map(d => parseFloat(d.customers));
+  const maxV      = Math.max(...orders, ...customers);
+
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top  - PAD.bottom;
+  const gap    = innerW / (data.length - 1);
+
+  function toX(i) { return PAD.left + i * gap; }
+  function toY(v) { return PAD.top + innerH - (v / maxV) * innerH; }
+
+  function drawLine(vals, color) {
+    const pts = vals.map((v, i) => `${toX(i)},${toY(v)}`).join(' ');
+    const pl  = svgEl('polyline', { points: pts, fill: 'none',
+      stroke: color, 'stroke-width': 2, 'stroke-linejoin': 'round',
+      'stroke-linecap': 'round' });
+    svg.appendChild(pl);
+    vals.forEach((v, i) => {
+      const c = svgEl('circle', { cx: toX(i), cy: toY(v), r: 3,
+        fill: color, opacity: 0.9 });
+      c.addEventListener('mouseenter', e =>
+        showTip(e, `<strong>${data[i].month_label}</strong>Orders: ${fmtNum(data[i].orders)}<br>Customers: ${fmtNum(data[i].customers)}`));
+      c.addEventListener('mousemove', moveTip);
+      c.addEventListener('mouseleave', hideTip);
+      svg.appendChild(c);
+    });
+  }
+
+  // Y axis
+  [0, maxV/2, maxV].forEach(v => {
+    const y = toY(v);
+    svg.appendChild(svgEl('line', { x1: PAD.left, x2: PAD.left + innerW,
+      y1: y, y2: y, stroke: 'rgba(255,255,255,0.05)', 'stroke-width': 1 }));
+    const t = svgEl('text', { x: PAD.left - 8, y: y + 4,
+      'text-anchor': 'end', class: 'axis-text' });
+    t.textContent = (v/1000).toFixed(1) + 'K';
+    svg.appendChild(t);
+  });
+
+  drawLine(orders,    '#4f8ef7');
+  drawLine(customers, '#34d399');
+
+  // X labels every 4
+  data.forEach((d, i) => {
+    if (i % 4 === 0) {
+      const t = svgEl('text', { x: toX(i), y: H - 8,
+        'text-anchor': 'middle', class: 'axis-text' });
+      t.textContent = d.month_label.split(' ')[0];
+      svg.appendChild(t);
+    }
+  });
+}
+
+function drawAovRating(data, W, H, PAD) {
+  const svg = document.getElementById('aov-chart');
+  svg.innerHTML = '';
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+
+  const aovs    = data.map(d => parseFloat(d.aov));
+  const ratings = data.map(d => parseFloat(d.avg_rating));
+  const maxAov  = Math.max(...aovs) * 1.1;
+  const minRat  = Math.min(...ratings) * 0.95;
+  const maxRat  = Math.max(...ratings) * 1.02;
+
+  const innerW = W - PAD.left - PAD.right - 40; // extra for right axis
+  const innerH = H - PAD.top  - PAD.bottom;
+  const bw     = Math.max(4, (innerW / data.length) * 0.6);
+  const gap    = innerW / data.length;
+
+  function toX(i)   { return PAD.left + i * gap + gap / 2; }
+  function toYAov(v) { return PAD.top + innerH - (v / maxAov) * innerH; }
+  function toYRat(v) { return PAD.top + innerH - ((v - minRat) / (maxRat - minRat)) * innerH; }
+
+  // AOV bars
+  aovs.forEach((v, i) => {
+    const bar = svgEl('rect', {
+      x: toX(i) - bw / 2,
+      y: toYAov(v),
+      width: bw,
+      height: innerH - toYAov(v) + PAD.top,
+      rx: 3, fill: '#fbbf24', opacity: 0.6
+    });
+    bar.addEventListener('mouseenter', e =>
+      showTip(e, `<strong>${data[i].month_label}</strong>AOV: R$${v.toFixed(2)}<br>Rating: ${ratings[i].toFixed(2)}`));
+    bar.addEventListener('mousemove', moveTip);
+    bar.addEventListener('mouseleave', hideTip);
+    svg.appendChild(bar);
+  });
+
+  // Rating line
+  const ratPts = ratings.map((v, i) => `${toX(i)},${toYRat(v)}`).join(' ');
+  svg.appendChild(svgEl('polyline', { points: ratPts, fill: 'none',
+    stroke: '#a78bfa', 'stroke-width': 2.5,
+    'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+
+  ratings.forEach((v, i) => {
+    const c = svgEl('circle', { cx: toX(i), cy: toYRat(v), r: 3.5,
+      fill: '#a78bfa' });
+    svg.appendChild(c);
+  });
+
+  // Right axis (rating)
+  const rAxisX = PAD.left + innerW + 8;
+  [minRat, (minRat+maxRat)/2, maxRat].forEach(v => {
+    const y = toYRat(v);
+    const t = svgEl('text', { x: rAxisX + 4, y: y + 4,
+      class: 'axis-text', 'text-anchor': 'start' });
+    t.textContent = v.toFixed(1) + '★';
+    svg.appendChild(t);
+  });
+
+  // Left axis (AOV)
+  [0, maxAov/2, maxAov].forEach(v => {
+    const y = toYAov(v);
+    const t = svgEl('text', { x: PAD.left - 8, y: y + 4,
+      'text-anchor': 'end', class: 'axis-text' });
+    t.textContent = 'R$' + v.toFixed(0);
+    svg.appendChild(t);
+  });
+
+  // X labels
+  data.forEach((d, i) => {
+    if (i % 4 === 0) {
+      const t = svgEl('text', { x: toX(i), y: H - 8,
+        'text-anchor': 'middle', class: 'axis-text' });
+      t.textContent = d.month_label.split(' ')[0];
+      svg.appendChild(t);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// SEGMENTS — real data from /insights/segments
+// ═══════════════════════════════════════════════
+const SEG_CONFIG = {
+  'Champions':       { color: '#34d399', bg: 'rgba(52,211,153,0.12)', action: 'Reward with referral programme', big: true },
+  'Loyal Customers': { color: '#4f8ef7', bg: 'rgba(79,142,247,0.12)', action: 'Upsell premium products', big: false },
+  'Promising':       { color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', action: 'First-time offer to convert', big: false },
+  'Needs Attention': { color: '#fbbf24', bg: 'rgba(251,191,36,0.12)', action: 'Nurture with content', big: false },
+  'At Risk':         { color: '#fb923c', bg: 'rgba(251,146,60,0.12)', action: 'Win-back campaign now', big: false },
+  'Lost':            { color: '#f87171', bg: 'rgba(248,113,113,0.12)', action: 'Exit survey — learn why', big: false },
+};
+
+function renderSegments(data) {
+  if (!data || !data.length) return;
+
+  // Treemap
+  const grid = document.getElementById('treemap-grid');
+  grid.innerHTML = '';
+  data.forEach((seg, i) => {
+    const cfg  = SEG_CONFIG[seg.segment] || { color: '#4f8ef7', bg: 'rgba(79,142,247,0.12)', action: '', big: false };
+    const cell = document.createElement('div');
+    cell.className = 'treemap-cell' + (cfg.big ? ' big' : '');
+    cell.style.background  = cfg.bg;
+    cell.style.border      = `1px solid ${cfg.color}30`;
+    cell.style.color       = cfg.color;
+    cell.innerHTML = `
+      <div>
+        <div class="seg-name">${seg.segment}</div>
+        <div class="seg-action">${cfg.action}</div>
+      </div>
+      <div>
+        <div class="seg-count">${fmtNum(seg.customer_count)}</div>
+        <div class="seg-pct">${seg.pct}% of base</div>
+      </div>`;
+    cell.addEventListener('mouseenter', e =>
+      showTip(e, `<strong>${seg.segment}</strong>${fmtNum(seg.customer_count)} customers<br>${seg.pct}% of total base`));
+    cell.addEventListener('mousemove', moveTip);
+    cell.addEventListener('mouseleave', hideTip);
+    grid.appendChild(cell);
+  });
+
+  // Bar chart
+  const svg  = document.getElementById('seg-bar-chart');
+  const W    = svg.parentElement.clientWidth - 48;
+  const H    = 320;
+  svg.innerHTML = '';
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+
+  const counts = data.map(d => parseInt(d.customer_count));
+  const maxC   = Math.max(...counts);
+  const PAD    = { top: 10, right: 24, bottom: 10, left: 16 };
+  const innerH = H - PAD.top - PAD.bottom;
+  const innerW = W - PAD.left - PAD.right;
+  const bh     = Math.max(6, (innerH / data.length) * 0.65);
+  const gap    = innerH / data.length;
+
+  data.forEach((seg, i) => {
+    const cfg   = SEG_CONFIG[seg.segment] || { color: '#4f8ef7' };
+    const count = parseInt(seg.customer_count);
+    const bw    = (count / maxC) * (innerW - 90);
+    const y     = PAD.top + i * gap + gap / 2 - bh / 2;
+
+    const bar = svgEl('rect', { x: PAD.left, y, width: Math.max(bw, 4), height: bh,
+      rx: 3, fill: cfg.color, opacity: 0.8 });
+    bar.addEventListener('mouseenter', e =>
+      showTip(e, `<strong>${seg.segment}</strong>${fmtNum(seg.customer_count)} customers · ${seg.pct}%`));
+    bar.addEventListener('mousemove', moveTip);
+    bar.addEventListener('mouseleave', hideTip);
+    svg.appendChild(bar);
+
+    // Label
+    const tl = svgEl('text', { x: PAD.left + Math.max(bw, 4) + 8, y: y + bh / 2 + 4,
+      fill: cfg.color, 'font-size': 11, 'font-weight': 600 });
+    tl.textContent = fmtNum(count);
+    svg.appendChild(tl);
+
+    // Segment name
+    const tn = svgEl('text', { x: PAD.left + Math.max(bw, 4) + 8, y: y + bh / 2 - 5,
+      fill: '#9090b0', 'font-size': 10 });
+    tn.textContent = seg.segment;
+    svg.appendChild(tn);
+  });
+
+  // Action table
+  const tbl = document.getElementById('seg-action-table');
+  tbl.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+      <thead>
+        <tr>
+          ${['Segment','Customers','Share','RFM Profile','Action'].map(h =>
+            `<th style="text-align:left;padding:8px 12px;font-size:0.7rem;
+             font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);">${h}</th>`
+          ).join('')}
+        </tr>
+      </thead>
+      <tbody>
+        ${data.map(seg => {
+          const cfg = SEG_CONFIG[seg.segment] || { color: '#4f8ef7', action: '' };
+          const profiles = {
+            'Champions':       'High R, High F, High M',
+            'Loyal Customers': 'Medium R, High F, High M',
+            'Promising':       'High R, Low F, Any M',
+            'Needs Attention': 'Medium R, Medium F, Medium M',
+            'At Risk':         'Low R, High F+M',
+            'Lost':            'Low R, Low F, Low M',
+          };
+          return `<tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 12px;font-weight:600;color:${cfg.color};font-size:0.82rem;">${seg.segment}</td>
+            <td style="padding:10px 12px;font-size:0.82rem;color:var(--text);">${fmtNum(seg.customer_count)}</td>
+            <td style="padding:10px 12px;font-size:0.82rem;color:var(--muted2);">${seg.pct}%</td>
+            <td style="padding:10px 12px;font-size:0.76rem;color:var(--muted2);">${profiles[seg.segment] || '—'}</td>
+            <td style="padding:10px 12px;font-size:0.76rem;color:var(--muted2);">${cfg.action}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════════
+// DELIVERY — real data from /insights/delivery
+// ═══════════════════════════════════════════════
+function renderDelivery(delivData, catData) {
+  if (!delivData || !delivData.length) return;
+
+  const order  = ['On Time','Late: 0-1d','Late: 1-3d','Late: 3-7d','Late: 7d+'];
+  const sorted = order.map(b => delivData.find(d => d.delivery_bucket === b)).filter(Boolean);
+  const onTimeRating = parseFloat(sorted[0]?.avg_rating || 4.3);
+
+  // Signal bars
+  const barsWrap = document.getElementById('signal-bars');
+  barsWrap.innerHTML = '';
+  sorted.forEach((d, i) => {
+    const rating = parseFloat(d.avg_rating);
+    const pct    = (rating / 5) * 100;
+    const isGood = i === 0;
+    const color  = isGood ? '#34d399'
+                 : rating >= 3.5 ? '#fbbf24'
+                 : rating >= 2.5 ? '#fb923c'
+                 : '#f87171';
+    const row = document.createElement('div');
+    row.className = 'signal-row';
+    row.innerHTML = `
+      <div class="signal-label">${d.delivery_bucket}</div>
+      <div class="signal-track">
+        <div class="signal-fill" style="width:0%;background:${color}"
+             data-pct="${pct}"></div>
+      </div>
+      <div class="signal-val" style="color:${color}">★ ${rating.toFixed(2)}</div>`;
+    row.addEventListener('mouseenter', e =>
+      showTip(e, `<strong>${d.delivery_bucket}</strong>Avg Rating: ${rating.toFixed(2)}<br>Orders: ${fmtNum(d.order_count)}<br>${d.pct_of_orders}% of total`));
+    row.addEventListener('mousemove', moveTip);
+    row.addEventListener('mouseleave', hideTip);
+    barsWrap.appendChild(row);
+  });
+
+  // Animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.signal-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 80);
+
+  // Volume chart
+  const svg = document.getElementById('delivery-vol-chart');
+  const W   = svg.parentElement.clientWidth - 48;
+  const H   = 280;
+  svg.innerHTML = '';
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+
+  const counts = sorted.map(d => parseInt(d.order_count));
+  const maxC   = Math.max(...counts);
+  const PAD    = { top: 16, right: 20, bottom: 40, left: 60 };
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top  - PAD.bottom;
+  const bw     = Math.max(24, (innerW / sorted.length) * 0.55);
+  const gap    = innerW / sorted.length;
+
+  sorted.forEach((d, i) => {
+    const count = parseInt(d.order_count);
+    const bh    = (count / maxC) * innerH;
+    const x     = PAD.left + i * gap + gap / 2 - bw / 2;
+    const y     = PAD.top + innerH - bh;
+    const color = i === 0 ? '#34d399' : '#f87171';
+    const bar   = svgEl('rect', { x, y, width: bw, height: bh, rx: 4,
+      fill: color, opacity: 0.8 });
+    bar.addEventListener('mouseenter', e =>
+      showTip(e, `<strong>${d.delivery_bucket}</strong>${fmtNum(count)} orders · ${d.pct_of_orders}%`));
+    bar.addEventListener('mousemove', moveTip);
+    bar.addEventListener('mouseleave', hideTip);
+    svg.appendChild(bar);
+
+    const tv = svgEl('text', { x: x + bw / 2, y: y - 6,
+      'text-anchor': 'middle', fill: color, 'font-size': 10, 'font-weight': 700 });
+    tv.textContent = fmtNum(count);
+    svg.appendChild(tv);
+
+    const tl = svgEl('text', { x: x + bw / 2, y: H - 24,
+      'text-anchor': 'middle', class: 'axis-text', 'font-size': 10 });
+    tl.textContent = d.delivery_bucket;
+    svg.appendChild(tl);
+
+    const tp = svgEl('text', { x: x + bw / 2, y: H - 10,
+      'text-anchor': 'middle', class: 'axis-text', 'font-size': 9 });
+    tp.textContent = d.pct_of_orders + '%';
+    svg.appendChild(tp);
+  });
+
+  // Y axis
+  [0, maxC/2, maxC].forEach(v => {
+    const y = PAD.top + innerH - (v / maxC) * innerH;
+    const t = svgEl('text', { x: PAD.left - 8, y: y + 4,
+      'text-anchor': 'end', class: 'axis-text' });
+    t.textContent = (v/1000).toFixed(0) + 'K';
+    svg.appendChild(t);
+    svg.appendChild(svgEl('line', { x1: PAD.left, x2: PAD.left + innerW,
+      y1: y, y2: y, stroke: 'rgba(255,255,255,0.05)', 'stroke-width': 1 }));
+  });
+
+  // Category chart
+  if (catData && catData.length) renderCategoryChart(catData);
+}
+
+function renderCategoryChart(data) {
+  const svg = document.getElementById('category-chart');
+  const W   = svg.parentElement.clientWidth - 48;
+  const H   = 340;
+  svg.innerHTML = '';
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+
+  const top15  = data.slice(0, 15);
+  const maxRev = Math.max(...top15.map(d => parseFloat(d.revenue)));
+  const PAD    = { top: 10, right: 80, bottom: 10, left: 8 };
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top  - PAD.bottom;
+  const bh     = Math.max(10, (innerH / top15.length) * 0.7);
+  const gap    = innerH / top15.length;
+
+  top15.forEach((d, i) => {
+    const rev   = parseFloat(d.revenue);
+    const bw    = (rev / maxRev) * (innerW - 140);
+    const y     = PAD.top + i * gap + gap / 2 - bh / 2;
+    const isTop = i === 0;
+    const color = isTop ? '#fbbf24' : '#4f8ef7';
+    const alpha = 0.9 - i * 0.04;
+
+    // Category name
+    const tname = svgEl('text', { x: PAD.left + 130, y: y + bh / 2 + 4,
+      'text-anchor': 'end', fill: '#9090b0', 'font-size': 10 });
+    tname.textContent = d.category.replace(/_/g, ' ').substring(0, 18);
+    svg.appendChild(tname);
+
+    // Bar
+    const bar = svgEl('rect', { x: PAD.left + 136, y, width: Math.max(bw, 4), height: bh,
+      rx: 3, fill: color, opacity: Math.max(alpha, 0.4) });
+    bar.addEventListener('mouseenter', e =>
+      showTip(e, `<strong>${d.category.replace(/_/g,' ')}</strong>Revenue: ${fmtRevenue(d.revenue)}<br>Orders: ${fmtNum(d.orders)}<br>Avg Rating: ${parseFloat(d.avg_rating||0).toFixed(2)} ★`));
+    bar.addEventListener('mousemove', moveTip);
+    bar.addEventListener('mouseleave', hideTip);
+    svg.appendChild(bar);
+
+    // Revenue label
+    const tv = svgEl('text', { x: PAD.left + 136 + Math.max(bw, 4) + 6,
+      y: y + bh / 2 + 4, fill: color, 'font-size': 10, 'font-weight': 600 });
+    tv.textContent = fmtRevenue(d.revenue);
+    svg.appendChild(tv);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// PREDICTION — calls real /predict/churn endpoint
+// uses your trained XGBoost model pkl
+// ═══════════════════════════════════════════════
+async function runPrediction() {
+  const btn = document.getElementById('btn-predict');
+  btn.textContent = 'Predicting...';
+  btn.classList.add('loading');
+
+  // Read form values
+  const orderVal     = parseFloat(document.getElementById('f-order-value').value)    || 0;
+  const freightVal   = parseFloat(document.getElementById('f-freight-value').value)  || 0;
+  const itemCount    = parseInt(document.getElementById('f-item-count').value)        || 1;
+  const avgItemPrice = parseFloat(document.getElementById('f-avg-item-price').value) || 0;
+  const actualDays   = parseFloat(document.getElementById('f-actual-days').value)    || 0;
+  const promDays     = parseFloat(document.getElementById('f-promised-days').value)  || 1;
+  const delayHrs     = parseFloat(document.getElementById('f-delay-hours').value)    || 0;
+  const onTime       = parseInt(document.getElementById('f-on-time').value);
+  const reviewScore  = parseFloat(document.getElementById('f-review-score').value)   || 3;
+  const payType      = document.getElementById('f-payment-type').value;
+  const installments = parseInt(document.getElementById('f-installments').value)     || 1;
+  const category     = document.getElementById('f-category').value;
+  const weight       = parseFloat(document.getElementById('f-weight').value)         || 0;
+  const state        = document.getElementById('f-state').value;
+  const month        = parseInt(document.getElementById('f-month').value)            || 11;
+
+  // Derived fields — same logic as your Python API
+  const freightPct    = orderVal > 0 ? (freightVal / orderVal) * 100 : 0;
+  const speedRatio    = promDays > 0 ? actualDays / promDays : 1;
+  const positiveRev   = reviewScore >= 4 ? 1 : 0;
+  const badRev        = reviewScore <= 2 ? 1 : 0;
+
+  const payload = {
+    order_value:            orderVal,
+    freight_value:          freightVal,
+    freight_pct:            Math.round(freightPct * 100) / 100,
+    item_count:             itemCount,
+    avg_item_price:         avgItemPrice,
+    actual_delivery_days:   actualDays,
+    promised_delivery_days: promDays,
+    delay_hours:            delayHrs,
+    delivered_on_time:      onTime,
+    delivery_speed_ratio:   Math.round(speedRatio * 10000) / 10000,
+    review_score:           reviewScore,
+    positive_review:        positiveRev,
+    bad_review:             badRev,
+    review_response_days:   0,
+    payment_type:           payType,
+    installments:           installments,
+    payment_methods_used:   1,
+    category_grouped:       category,
+    product_weight_g:       weight,
+    product_photos_qty:     0,
+    purchase_month:         month,
+    purchase_dow:           1,
+    purchase_hour:          12,
+    state_grouped:          state,
+  };
+
+  try {
+    const res = await fetch(API + '/predict/churn', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Prediction failed: ' + res.status);
+    const result = await res.json();
+    renderGauge(result);
+  } catch(e) {
+    document.getElementById('gauge-card').innerHTML =
+      `<div style="color:var(--red);font-size:0.82rem;padding:24px;">
+         Error: ${e.message}<br><br>
+         <span style="color:var(--muted);">Make sure FastAPI is running on port 8000.</span>
+       </div>`;
+  } finally {
+    btn.textContent = 'Predict Churn Risk';
+    btn.classList.remove('loading');
+  }
+}
+
+function renderGauge(result) {
+  const prob   = result.churn_probability;
+  const score  = result.risk_score;
+  const label  = result.risk_label;
+  const rec    = result.recommendation;
+  const factors = result.top_risk_factors || [];
+
+  const colorMap = { HIGH: '#f87171', MEDIUM: '#fb923c', LOW: '#fbbf24', SAFE: '#34d399' };
+  const color    = colorMap[label] || '#4f8ef7';
+
+  // SVG gauge arc
+  const R   = 80;
+  const CX  = 100; const CY = 100;
+  const startAngle = -210;
+  const endAngle   = 30;
+  const totalArc   = endAngle - startAngle; // 240 deg
+  const fillArc    = totalArc * (score / 100);
+  const fillEnd    = startAngle + fillArc;
+
+  function polar(cx, cy, r, angleDeg) {
+    const rad = (angleDeg * Math.PI) / 180;
+    return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+  }
+
+  function arcPath(cx, cy, r, a1, a2) {
+    const [x1, y1] = polar(cx, cy, r, a1);
+    const [x2, y2] = polar(cx, cy, r, a2);
+    const large     = (a2 - a1) > 180 ? 1 : 0;
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
+  }
+
+  const gaugeSVG = `
+    <svg width="200" height="130" viewBox="0 0 200 130">
+      <!-- Track -->
+      <path d="${arcPath(CX, CY, R, startAngle, endAngle)}"
+            fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12"
+            stroke-linecap="round"/>
+      <!-- Fill -->
+      <path d="${arcPath(CX, CY, R, startAngle, fillEnd)}"
+            fill="none" stroke="${color}" stroke-width="12"
+            stroke-linecap="round"
+            style="filter:drop-shadow(0 0 6px ${color}88)"/>
+      <!-- Tick marks -->
+      ${[0,25,50,75,100].map(pct => {
+        const ang = startAngle + totalArc * pct / 100;
+        const [ix, iy] = polar(CX, CY, R - 18);
+        const [ox, oy] = polar(CX, CY, R - 8);
+        return `<line x1="${polar(CX,CY,R-20,ang)[0]}" y1="${polar(CX,CY,R-20,ang)[1]}"
+                      x2="${polar(CX,CY,R-12,ang)[0]}" y2="${polar(CX,CY,R-12,ang)[1]}"
+                      stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>`;
+      }).join('')}
+    </svg>`;
+
+  document.getElementById('gauge-card').innerHTML = `
+    <div style="position:relative;margin-bottom:4px;">
+      ${gaugeSVG}
+      <div style="position:absolute;top:50px;left:0;right:0;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;
+                    color:${color};letter-spacing:-0.04em;line-height:1;">${score}%</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:3px;">churn probability</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <span class="risk-badge" style="background:${color}22;color:${color};
+            border:1px solid ${color}44;">${label} RISK</span>
+    </div>
+
+    <div class="gauge-rec">${rec}</div>
+
+    ${factors.length ? `
+      <div class="risk-factors-label">Risk factors detected</div>
+      <div class="risk-factors">
+        ${factors.map(f => `<div class="risk-factor-pill">⚠ ${f}</div>`).join('')}
+      </div>` : ''}
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);
+                font-size:0.7rem;color:var(--muted);text-align:left;line-height:1.5;">
+      Model: XGBoost · AUC 0.777 · 62 features<br>
+      Threshold: 0.36 · CV: 0.760±0.009
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+async function init() {
+  showLoader('Connecting to RetailIQ database...');
+  try {
+    const check = await fetch(API + '/');
+    if (check.ok) {
+      document.getElementById('liveStatus').textContent = 'DB Connected';
+    }
+  } catch(e) {
+    document.getElementById('liveStatus').textContent = 'API Offline';
+    document.getElementById('liveStatus').style.color = 'var(--red)';
+  }
+
+  // Load overview data
+  try {
+    state.summary = await apiFetch('/insights/summary');
+    renderKPIs(state.summary);
+  } catch(e) {
+    console.error('Summary fetch failed:', e);
+  }
+  hideLoader();
+}
+
+window.addEventListener('DOMContentLoaded', init);
+
+// Resize — redraw charts if page is active
+window.addEventListener('resize', () => {
+  const active = document.querySelector('.page.active');
+  if (!active) return;
+  const id = active.id.replace('page-', '');
+  if (id === 'revenue'  && state.revenue)   renderRevenue(state.revenue);
+  if (id === 'segments' && state.segments)  renderSegments(state.segments);
+  if (id === 'delivery' && state.delivery)  renderDelivery(state.delivery, state.categories);
+});
+</script>
+</body>
+</html>
