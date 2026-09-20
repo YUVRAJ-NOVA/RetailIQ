@@ -3,7 +3,6 @@ venv/
 data/raw/
 __pycache__/
 *.pyc
-*.pkl
 *.sql
 retailiq_backup.sql
 t1.sql
@@ -20,5 +19,3 @@ retailiq_schema.sql
 *.txt
 .TXT
 *Copy*
-ml/models/churn_model.pkl
-ml/models/shap_explainer.pkl
